@@ -1,0 +1,33 @@
+{
+  "name": "storyteller-fe",
+  "version": "0.0.1",
+  "description": "Frontend of storyteller",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack-dev-server -d",
+    "dist": "webpack -p",
+    "dist:dev": "webpack -d",
+    "rei-pkg": "npm i react-modeler-canvas",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "WebSockets",
+    "HTML5"
+  ],
+  "author": "Mario Giugno",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-core": "^6.24.1",
+    "babel-loader": "^6.4.1",
+    "babel-preset-latest": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "webpack": "^2.3.3",
+    "webpack-dev-server": "^2.4.2"
+  },
+  "dependencies": {
+    "react-modeler-canvas": "file:///D:\\vsproj\\git\\storyteller\\react-modeler-canvas",    
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4"
+  }
+}
