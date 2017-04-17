@@ -7,6 +7,7 @@
     "start": "webpack-dev-server -d",
     "dist": "webpack -p",
     "dist:dev": "webpack -d",
+    "preinstall": "npm i --save ../react-modeler-canvas",
     "rei-pkg": "npm i react-modeler-canvas",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -26,8 +27,8 @@
     "webpack-dev-server": "^2.4.2"
   },
   "dependencies": {
-    "react-modeler-canvas": "file:///D:\\vsproj\\git\\storyteller\\react-modeler-canvas",    
     "react": "^15.5.4",
-    "react-dom": "^15.5.4"
+    "react-dom": "^15.5.4",
+    "react-modeler-canvas": "file:///develop/git/storyteller/react-modeler-canvas"
   }
 }
