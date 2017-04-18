@@ -7,8 +7,7 @@
     "start": "webpack-dev-server -d",
     "dist": "webpack -p",
     "dist:dev": "webpack -d",
-    "preinstall": "npm i --save ../react-modeler-canvas",
-    "rei-pkg": "npm i react-modeler-canvas",
+    "preinstall": "npm link ../react-modeler-canvas",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -23,12 +22,12 @@
     "babel-preset-latest": "^6.24.1",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
+    "babel-register": "https://registry.npmjs.org/babel-register/-/babel-register-6.24.1.tgz",
     "webpack": "^2.3.3",
     "webpack-dev-server": "^2.4.2"
   },
   "dependencies": {
     "react": "^15.5.4",
-    "react-dom": "^15.5.4",
-    "react-modeler-canvas": "file:///develop/git/storyteller/react-modeler-canvas"
+    "react-dom": "^15.5.4"
   }
 }

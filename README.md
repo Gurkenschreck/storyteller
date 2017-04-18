@@ -34,4 +34,16 @@ storyteller-fe | a frontend implementation of the storyteller app.
 
 ### Build
 
-...
+react-modeler-canvas is a standalone module which is just located inside this repository.  
+storyteller-fe has a softlink (through *npm link ../react-modeler-canvas*) to this package. It compiles this package on the fly using babel-register. This allows the simultaneous development of the could-be-standalone package react-modeler-canvas. react-modeler-canvas can later be extracted.
+
+To start the application, run the following commands:
+```bash
+git clone https://github.com/Gurkenschreck/storyteller.git
+cd storyteller/react-modeler-canvas
+npm i
+cd ../storyteller-fe
+npm i
+npm start
+```
+The application will be hosted at [http://localhost:4711](http://localhost:4711).

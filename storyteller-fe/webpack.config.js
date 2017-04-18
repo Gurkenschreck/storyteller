@@ -3,10 +3,10 @@ var path = require('path')
 
 var conf = {
     entry: {
-        author: path.join(__dirname, 'src/author.js')
+        modeler: path.join(__dirname, 'src/modeler.js')
     },
     output: {
-        path: path.join(__dirname, 'dist'),
+        path: path.join(__dirname, 'lib'),
         filename: '[name].js'
     },
     module: {
@@ -25,7 +25,7 @@ var conf = {
 
     devServer: {
         port: 4711,
-        contentBase: 'dist',
+        contentBase: 'lib',
         inline: true
     }
 }

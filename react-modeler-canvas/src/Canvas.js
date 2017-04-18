@@ -20,9 +20,7 @@ export class EditorCanvas extends Component {
 
     render() {
         return (
-            <canvas>
-                Please use an updated browser.
-            </canvas>
+            <div>hello</div>
         )
     }
 }
