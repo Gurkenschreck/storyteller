@@ -1,9 +1,10 @@
 import React, {Component, PropTypes} from 'react';
+import Element from './Element';
 
 export class EditorCanvas extends Component {
 
     static propTypes = {
-        elements: PropTypes.arrayOf(PropTypes.object)
+        elements: PropTypes.arrayOf(Element)
     }
 
     static defaultProps = {
@@ -20,7 +21,13 @@ export class EditorCanvas extends Component {
 
     render() {
         return (
-            <div>hello</div>
+            <div>
+                <div>hello</div>
+                <canvas>
+
+                    Please use an updated browser that supports the HTML5 canvas element.
+                </canvas>
+            </div>
         )
     }
 }
