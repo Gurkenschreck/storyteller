@@ -40,10 +40,11 @@ storyteller-fe has a softlink (through *npm link ../react-modeler-canvas*) to th
 To start the application, run the following commands:
 ```bash
 git clone https://github.com/Gurkenschreck/storyteller.git
-cd storyteller/react-modeler-canvas
-npm i
-cd ../storyteller-fe
-npm i
+cd storyteller
+./install.sh
+cd storyteller-fe
 npm start
 ```
+For development, the install.sh script will set up some things. storyteller-fe and react-modeler-canvas depend on react. storyteeller-fe links to react-modeler-canvas and includes it. With this setup, there are 2 react packages being exposed. Because of this, a link is created from react-modeler-canvas/node_modules/react to the react package in storyteller-fe. The install.sh script does this for you, until I spend some time looking for a better solution.
+
 The application will be hosted at [http://localhost:4711](http://localhost:4711).

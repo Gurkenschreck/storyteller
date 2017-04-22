@@ -19,11 +19,16 @@ export class EditorCanvas extends Component {
         }
     }
 
+    _onClick(e) {
+        e.preventDefault();
+        console.log(e);
+    }
+
     render() {
         return (
             <div>
                 <div>hello</div>
-                <canvas>
+                <canvas ref="can" onClick={this._onClick} width="800" height="500">
 
                     Please use an updated browser that supports the HTML5 canvas element.
                 </canvas>
