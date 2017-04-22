@@ -6,7 +6,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import {Canvas} from 'react-modeler-canvas';
-console.log(Canvas);
 
 ReactDOM.render(
     <Canvas />,
