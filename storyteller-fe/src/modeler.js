@@ -8,13 +8,18 @@ import ReactDOM from 'react-dom';
 import {Canvas, PredefinedDrawableShape} from 'react-modeler-canvas';
 
 function onElementDoubleClick(element) {
-    console.log(element);
+    console.log(`Element double click for`, elment);
+}
+
+function onElementContextMenu(element) {
+    console.log(`Context menu for`, element);
 }
 
 ReactDOM.render(
     <Canvas style={{backgroundColor: '#ddd'}}
-        onElementDoubleClick={onElementDoubleClick}
         newElementShape={PredefinedDrawableShape.CircleShape}
+        onElementDoubleClick={onElementDoubleClick}
+        onElementContextMenu={onElementContextMenu}
     />,
     document.getElementById('modeler_root')
 )

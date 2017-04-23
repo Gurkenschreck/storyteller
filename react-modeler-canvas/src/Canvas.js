@@ -158,7 +158,13 @@ export class EditorCanvas extends Component {
 
     _onContextMenu(e) {
         e.preventDefault();
-        this.props.onContextMenu();
+        const {x_c, y_c} = this._getClickPosition(e);
+        const clickedElement = this._findFirstChildUnderClick(x_c, y_c);
+        if(clickedElement) {
+            this.props.onElementContextMenu(clickedElement);
+        } else {
+            this.props.onContextMenu();
+        }
     }
 
     /* CANVAS COMPONENT FUNCTIONS */
