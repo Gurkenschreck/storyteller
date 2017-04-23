@@ -9,8 +9,11 @@ class Element {
     uuid = uuidV4();
     x;
     y;
-    width;
-    height;
+    w;
+    h;
+    drawableShape;
+    onContextMenuCallback;
+    onDoubleClickCallback;
 
     /**
      * Get an object containing the position of
@@ -20,26 +23,32 @@ class Element {
         return {
             x_e: this.x,
             y_e: this.y,
-            h_e: this.height,
-            w_e: this.width
+            w_e: this.w,
+            h_e: this.h
         }
     }
 
     constructor(
-        x = 0, y = 0,
-        width = 100, height = 18) {
+        x = 0,
+        y = 0,
+        drawableShape
+    ) {
         this.x = x;
         this.y = y;
-        this.width = width;
-        this.height = height;
 
-        this.text = 'Nothin was clicked yet, m8'
+        this.w = drawableShape.width;
+        this.h = drawableShape.height;
+        this.drawableShape = drawableShape;
+
+        this.onClick = this.onClick.bind(this);
+        this.onDoubleClick = this.onDoubleClick.bind(this);
+        this.onContextMenu = this.onContextMenu.bind(this);
     }
 
     /**
      * Is called when the canvas detects a click, and
      * figures that this element is positioned under the
-     * click. The element can react
+     * click.
      *
      * @param {MouseEvent} e The mouse event of onClick.
      * @param {number} x_c The x position of the click.
@@ -47,10 +56,15 @@ class Element {
      */
     onClick(e, x_c, y_c) {
         this.text = `Clickposition - x_c: ${x_c}; y_c: ${y_c}`;
+        // TODO evaluate if onClickCallback shoudl be triggered
     }
 
-    onDoubleClick(e, x_c, y_c) {
-        this.text = `Doubleclicked!`;
+    onDoubleClick() {
+        this.onDoubleClickCallback(this);
+    }
+
+    onContextMenu() {
+        this.onContextMenuCallback(this);
     }
 
     /**
@@ -60,12 +74,9 @@ class Element {
      * @param {canvas.getContext()} context The canvas context o draw on.
      */
     render(context) {
-        context.fillStyle = 'white';
-        context.fillRect(this.x, this.y, this.width, this.height);
-        context.font = '18pt Calibri';
-        context.fillStyle = '#008fff';
-        context.fillText(this.text, this.x, this.y+this.height);
+        this.drawableShape.drawSelf(context, this.x, this.y);
     }
+
 }
 
 export default Element;

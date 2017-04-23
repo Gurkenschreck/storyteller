@@ -1,25 +1,67 @@
 import React, {Component, PropTypes} from 'react';
 import Element from './Element';
+import DrawableShape from './DrawableShape';
 import DragHandler from './DragHandler';
 import {
     clearCanvas,
     getMousePosition,
     isClickInElementBoundaries
 } from './CanvasUtils';
+import {
+    isRightMouseButton
+} from './MouseUtils';
 
 /**
  * Canvas to draw 2d elements.
+ *
+ * The react reference to the HTML5 canvas element is called
+ * 'canvas'. The EditorCanvas makes use of CanvasUtils and the
+ * DragHandler which, surprise surprise, handles the dragging
+ * of a element.
  */
 export class EditorCanvas extends Component {
 
     static propTypes = {
         elements: PropTypes.arrayOf(Element),
-        backgroundColor: PropTypes.string
+
+        /* Canvas properties */
+        id: PropTypes.string,
+        classNames: PropTypes.string,
+        backgroundColor: PropTypes.string,
+        width: PropTypes.number,
+        height: PropTypes.number,
+        style: PropTypes.object,
+
+        /* Canvas handler */
+        onDoubleClick: PropTypes.func,
+        onContextMenu: PropTypes.func,
+        onElementCreated: PropTypes.func,
+
+        /* Element handler */
+        newElementShape: PropTypes.func.isRequired,
+        onElementDoubleClick: PropTypes.func.isRequired,
+        onElementContextMenu: PropTypes.func
     }
 
     static defaultProps = {
         elements: [],
-        backgroundColor: '#ddd'
+
+        /* Canvas properties */
+        id: '',
+        backgroundColor: '#ddd',
+        width: 800,
+        height: 500,
+        style: {},
+
+        /* Canvas handler */
+        onContextMenu: (canvas) => {},
+        onElementCreated: (newElement) => {},
+
+        /* Element handler */
+
+        newElementShape: (element) => { throw new Error('newElementShape was not passed.')},
+        onElementDoubleClick: (element) => { throw new Error('onElementDoubleClick was not passed.')},
+        onElementContextMenu: (element) => {}
     }
 
     _dragHandler;
@@ -31,14 +73,13 @@ export class EditorCanvas extends Component {
             elements: props.elements
         }
 
-        this.state.elements.push(new Element(10, 10, 200, 18));
-        this.state.elements.push(new Element(50, 80, 200, 18));
-
         this._onClick = this._onClick.bind(this);
         this._onDoubleClick = this._onDoubleClick.bind(this);
         this._onMouseDown = this._onMouseDown.bind(this);
         this._onMouseMove = this._onMouseMove.bind(this);
+        this._onContextMenu = this._onContextMenu.bind(this);
         this.update = this.update.bind(this);
+        this._getClickPosition = this._getClickPosition.bind(this);
     }
 
     /* LIFECYCLE METHODS */
@@ -57,8 +98,7 @@ export class EditorCanvas extends Component {
      */
     _onClick(e) {
         e.preventDefault();
-        const canvas = this.refs.canvas;
-        const {x_c, y_c} = getMousePosition(canvas, e);
+        const {x_c, y_c} = this._getClickPosition(e);
 
         if(!this._dragHandler.wasDragged) {
             console.log(`Clicking here: x_c:${x_c} and y_c:${y_c}`);
@@ -77,22 +117,26 @@ export class EditorCanvas extends Component {
 
     _onDoubleClick(e) {
         e.preventDefault();
-        const canvas = this.refs.canvas;
-        const {x_c, y_c} = getMousePosition(canvas, e);
         console.log(`Doubleclick`);
+
+        const {x_c, y_c} = this._getClickPosition(e);
         const clickedElement = this._findFirstChildUnderClick(x_c, y_c);
 
         if(clickedElement) {
-            clickedElement.onDoubleClick(e, x_c, y_c);
+            clickedElement.onDoubleClick();
         } else {
-            this.addNewElement(x_c, y_c);
+            const newElement = this.addNewElement(x_c, y_c);
+            this.props.onElementCreated(newElement);
         }
         this.update();
     }
 
     _onMouseDown(e) {
         e.preventDefault();
-        const {x_c, y_c} = getMousePosition(this.refs.canvas, e);
+        if(isRightMouseButton(e)) {
+            return;
+        }
+        const {x_c, y_c} = this._getClickPosition(e);
         const clickedElement = this._findFirstChildUnderClick(x_c, y_c);
         if(clickedElement) {
             this._dragHandler.handleDraggingForElement(clickedElement, x_c, y_c);
@@ -102,8 +146,7 @@ export class EditorCanvas extends Component {
     _onMouseMove(e) {
         e.preventDefault();
 
-        const canvas = this.refs.canvas;
-        const {x_c, y_c} = getMousePosition(canvas, e);
+        const {x_c, y_c} = this._getClickPosition(e);
 
         if(this._dragHandler.isDragging) {
             this._dragHandler.applyTransition(x_c, y_c);
@@ -114,6 +157,11 @@ export class EditorCanvas extends Component {
         }
     }
 
+    _onContextMenu(e) {
+        e.preventDefault();
+        this.props.onContextMenu();
+    }
+
     /* CANVAS COMPONENT FUNCTIONS */
 
     /**
@@ -121,12 +169,16 @@ export class EditorCanvas extends Component {
      * Does not rerender the canvas.
      * @param {number} posX The x position of the new element.
      * @param {number} posY The y position of the new element.
+     * @returns {Element} The new element.
      */
     addNewElement(posX, posY) {
-        const newEle = new Element(posX, posY);
+        const newEle = new Element(posX, posY, new this.props.newElementShape());
+        newEle.onContextMenuCallback = this.props.onElementContextMenu;
+        newEle.onDoubleClickCallback = this.props.onElementDoubleClick;
         const newElements = this.state.elements;
         newElements.push(newEle);
         this.setState({elements: newElements});
+        return newEle;
     }
 
     /**
@@ -159,13 +211,21 @@ export class EditorCanvas extends Component {
     }
 
     /**
+     * Calculates the mouse position relative to the canvas.
+     * @param {MouseEvent} e The mouse event to read the mouse position from.
+     */
+    _getClickPosition(e) {
+        const canvas = this.refs.canvas;
+        return getMousePosition(canvas, e);
+    }
+
+    /**
      * Updates the mouse cursor depending on the passed in element.
      * If the clicked element is present, the mouse cursor is set to
      * 'pointer'.
      * @param {Element} clickedElement Eventually a clicked element.
      */
     _updateMouseCursor(clickedElement) {
-
         if(clickedElement) {
             document.body.style.cursor = 'pointer';
         } else {
@@ -177,12 +237,16 @@ export class EditorCanvas extends Component {
         return (
             <div>
                 <div>Hello</div>
-                <canvas ref="canvas" style={{backgroundColor: this.props.backgroundColor}}
-                        width="800" height="500"
+                <canvas ref="canvas"
+                        id={this.props.id}
+                        style={this.props.style}
+                        width={this.props.width}
+                        height={this.props.height}
                         onClick={this._onClick}
                         onDoubleClick={this._onDoubleClick}
                         onMouseDown={this._onMouseDown}
-                        onMouseMove={this._onMouseMove}>
+                        onMouseMove={this._onMouseMove}
+                        onContextMenu={this._onContextMenu}>
 
                     Please use an updated browser that supports the HTML5 canvas element.
                     Try creating an adventure using pen and paper...
