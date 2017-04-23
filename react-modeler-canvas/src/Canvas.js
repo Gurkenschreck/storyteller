@@ -30,6 +30,8 @@ export class EditorCanvas extends Component {
 
         this._onClick = this._onClick.bind(this);
         this._onDoubleClick = this._onDoubleClick.bind(this);
+        this._onMouseDown = this._onMouseDown.bind(this);
+        this._onMouseMove = this._onMouseMove.bind(this);
         this.update = this.update.bind(this);
     }
 
@@ -48,11 +50,21 @@ export class EditorCanvas extends Component {
         e.preventDefault();
         const canvas = this.refs.canvas;
         const {x_c, y_c} = getMousePosition(canvas, e);
-        console.log(`Clicking here: x_c:${x_c} and y_c:${y_c}`);
-        const elementsOnClick = this._findChildrenUnderClick(x_c, y_c);
-        elementsOnClick.forEach(ele => {
-            ele.onClick(e, x_c, y_c);
-        });
+
+        if(!this.dragged) {
+            console.log(`Clicking here: x_c:${x_c} and y_c:${y_c}`);
+            const elementUnderClick = this._findFirstChildUnderClick(x_c, y_c);
+            elementUnderClick.onClick(e, x_c, y_c);
+        } else {
+            console.log(`Releasing here: x_c:${x_c} and y_c:${y_c}`, e);
+        }
+
+        delete this.dragged;
+        delete this.draggingElement;
+        delete this.dragging;
+        delete this.oldMousePosX;
+        delete this.oldMousePosY;
+
         this.update();
     }
 
@@ -65,28 +77,33 @@ export class EditorCanvas extends Component {
         const canvas = this.refs.canvas;
         const {x_c, y_c} = getMousePosition(canvas, e);
         console.log(`Doubleclick`);
-        const elementsOnClick = this._findChildrenUnderClick(x_c, y_c);
+        const elementUnderClick = this._findFirstChildUnderClick(x_c, y_c);
 
-        if(elementsOnClick.length === 0) {
+        if(!elementUnderClick) {
             const newEle = new Element(x_c, y_c);
             const newElements = this.state.elements;
             newElements.push(newEle);
             this.setState({elements: newElements})
         } else {
-            elementsOnClick.forEach(ele => {
-                ele.onDoubleClick(e, x_c, y_c);
-            });
+            elementUnderClick.onDoubleClick(e, x_c, y_c);
         }
         this.update();
     }
+
 
     /**
      * Creates a list of all elementss which are positioned under the click.
      * @param {number} x_c The x position of the click.
      * @param {number} y_c The y position of the click.
      */
-    _findChildrenUnderClick(x_c, y_c) {
+    _findChildUnterClick(x_c, y_c) {
         return this.state.elements.filter(element => {
+            return isClickInElementBoundaries(element, x_c, y_c);
+        })
+    }
+
+    _findFirstChildUnderClick(x_c, y_c) {
+        return this.state.elements.find(element => {
             return isClickInElementBoundaries(element, x_c, y_c);
         })
     }
@@ -106,6 +123,39 @@ export class EditorCanvas extends Component {
         })
     }
 
+
+    _onMouseDown(e) {
+        e.preventDefault();
+        console.log(`Mouse down`);
+        const canvas = this.refs.canvas;
+        const {x_c, y_c} = getMousePosition(canvas, e);
+
+        const elementUnderClick = this._findFirstChildUnderClick(x_c, y_c);
+        console.log(elementUnderClick);
+        if(elementUnderClick) {
+            this.dragging = true;
+            this.draggingElement = elementUnderClick;
+            this.oldMousePosX = x_c;
+            this.oldMousePosY = y_c;
+        }
+    }
+
+    _onMouseMove(e) {
+        e.preventDefault();
+        if(this.dragging) {
+            this.dragged = true;
+            console.log(`Dragging ${e}`);
+            const canvas = this.refs.canvas;
+            console.log(getMousePosition(canvas, e));
+            const {x_c, y_c} = getMousePosition(canvas, e);
+            this.draggingElement.x += -1 * (this.oldMousePosX - x_c);
+            this.draggingElement.y += -1 * (this.oldMousePosY - y_c);
+            this.oldMousePosX = x_c;
+            this.oldMousePosY =y_c;
+            this.update();
+        }
+    }
+
     render() {
         return (
             <div>
@@ -113,7 +163,9 @@ export class EditorCanvas extends Component {
                 <canvas ref="canvas" style={{backgroundColor: this.props.backgroundColor}}
                         width="800" height="500"
                         onClick={this._onClick}
-                        onDoubleClick={this._onDoubleClick}>
+                        onDoubleClick={this._onDoubleClick}
+                        onMouseDown={this._onMouseDown}
+                        onMouseMove={this._onMouseMove}>
 
                     Please use an updated browser that supports the HTML5 canvas element.
                 </canvas>
