@@ -50,6 +50,11 @@ class Element {
         this.text = `Clickposition - x_c: ${x_c}; y_c: ${y_c}`;
     }
 
+    onDoubleClick(e, x_c, y_c) {
+        console.log(`Double click on element`);
+        this.text = `Doubleclicked!`;
+    }
+
     /**
      * Render is called when the eelement is first drawn or
      * an update on the canvas happened. The element should
@@ -57,8 +62,6 @@ class Element {
      * @param {canvas.getContext()} context The canvas context o draw on.
      */
     render(context) {
-        console.log('Rendering', this, this.text);
-
         context.fillStyle = 'white';
         context.fillRect(this.x, this.y, this.width, this.height);
         context.font = '18pt Calibri';
