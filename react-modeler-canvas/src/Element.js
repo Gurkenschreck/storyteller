@@ -46,12 +46,10 @@ class Element {
      * @param {number} y_c The y position of the click.
      */
     onClick(e, x_c, y_c) {
-        console.log('Clicking ', x_c, y_c);
         this.text = `Clickposition - x_c: ${x_c}; y_c: ${y_c}`;
     }
 
     onDoubleClick(e, x_c, y_c) {
-        console.log(`Double click on element`);
         this.text = `Doubleclicked!`;
     }
 
