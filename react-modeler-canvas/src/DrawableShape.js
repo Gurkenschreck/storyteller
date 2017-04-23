@@ -12,6 +12,14 @@ class DrawableShape {
     width;
     height;
 
+    constructor(width = 75, height = 75) {
+        if (new.target === DrawableShape) {
+           throw new TypeError("Cannot construct DrawableShape instances directly");
+        }
+        this.width = width;
+        this.height = height;
+    }
+
     /**
      * Draws the representation of the element on the canvas.
      * @param {object} context The canvas context to draw on.

@@ -14,7 +14,7 @@ function onElementDoubleClick(element) {
 ReactDOM.render(
     <Canvas style={{backgroundColor: '#ddd'}}
         onElementDoubleClick={onElementDoubleClick}
-        newElementShape={PredefinedDrawableShape.RectShape}
+        newElementShape={PredefinedDrawableShape.CircleShape}
     />,
     document.getElementById('modeler_root')
 )
