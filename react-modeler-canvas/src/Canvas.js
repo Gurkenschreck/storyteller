@@ -33,7 +33,6 @@ export class EditorCanvas extends Component {
         style: PropTypes.object,
 
         /* Canvas handler */
-        onDoubleClick: PropTypes.func,
         onContextMenu: PropTypes.func,
         onElementCreated: PropTypes.func,
 
@@ -54,12 +53,12 @@ export class EditorCanvas extends Component {
         style: {},
 
         /* Canvas handler */
-        onContextMenu: (canvas) => {},
+        onContextMenu: (event) => {},
         onElementCreated: (newElement) => {},
 
         /* Element handler */
 
-        newElementShape: (element) => { throw new Error('newElementShape was not passed.')},
+        newElementShape: () => { throw new Error('newElementShape was not passed.')},
         onElementDoubleClick: (element) => { throw new Error('onElementDoubleClick was not passed.')},
         onElementContextMenu: (element) => {}
     }
