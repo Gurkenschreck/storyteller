@@ -54,7 +54,9 @@ export class EditorCanvas extends Component {
         if(!this.dragged) {
             console.log(`Clicking here: x_c:${x_c} and y_c:${y_c}`);
             const elementUnderClick = this._findFirstChildUnderClick(x_c, y_c);
-            elementUnderClick.onClick(e, x_c, y_c);
+            if(elementUnderClick) {
+                elementUnderClick.onClick(e, x_c, y_c);
+            }
         } else {
             console.log(`Releasing here: x_c:${x_c} and y_c:${y_c}`, e);
         }
@@ -142,17 +144,25 @@ export class EditorCanvas extends Component {
 
     _onMouseMove(e) {
         e.preventDefault();
+        const canvas = this.refs.canvas;
+        const {x_c, y_c} = getMousePosition(canvas, e);
+
         if(this.dragging) {
             this.dragged = true;
-            console.log(`Dragging ${e}`);
-            const canvas = this.refs.canvas;
-            console.log(getMousePosition(canvas, e));
-            const {x_c, y_c} = getMousePosition(canvas, e);
             this.draggingElement.x += -1 * (this.oldMousePosX - x_c);
             this.draggingElement.y += -1 * (this.oldMousePosY - y_c);
             this.oldMousePosX = x_c;
             this.oldMousePosY =y_c;
             this.update();
+        } else {
+            const elementUnderClick = this._findFirstChildUnderClick(x_c, y_c);
+
+            if(elementUnderClick) {
+                document.body.style.cursor = 'pointer';
+            }
+            else {
+                document.body.style.cursor = 'default';
+            }
         }
     }
 
