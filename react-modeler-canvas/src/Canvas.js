@@ -26,7 +26,6 @@ export class EditorCanvas extends Component {
 
         /* Canvas properties */
         id: PropTypes.string,
-        classNames: PropTypes.string,
         backgroundColor: PropTypes.string,
         width: PropTypes.number,
         height: PropTypes.number,
@@ -144,7 +143,6 @@ export class EditorCanvas extends Component {
 
     _onMouseMove(e) {
         e.preventDefault();
-
         const {x_c, y_c} = this._getClickPosition(e);
 
         if(this._dragHandler.isDragging) {

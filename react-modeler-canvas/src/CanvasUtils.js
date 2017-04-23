@@ -24,7 +24,7 @@ export const getMousePosition = (canvas, event) => {
     };
 }
 
-
+// TODO add hitboxes for different shapes
 /**
  * Figures if the element was clicked on.
  * @param {Element} element The element to test.
