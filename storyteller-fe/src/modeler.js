@@ -8,7 +8,7 @@ import ReactDOM from 'react-dom';
 import {Canvas, PredefinedDrawableShape} from 'react-modeler-canvas';
 
 function onElementDoubleClick(element) {
-    console.log(`Element double click for`, elment);
+    console.log(`Element double click for`, element);
 }
 
 function onElementContextMenu(element) {
