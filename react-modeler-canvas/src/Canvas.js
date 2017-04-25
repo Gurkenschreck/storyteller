@@ -37,6 +37,7 @@ export class EditorCanvas extends Component {
 
         /* Element handler */
         newElementShape: PropTypes.func.isRequired,
+        onElementClick: PropTypes.func.isRequired,
         onElementDoubleClick: PropTypes.func.isRequired,
         onElementContextMenu: PropTypes.func
     }
@@ -177,6 +178,7 @@ export class EditorCanvas extends Component {
     addNewElement(posX, posY) {
         const newEle = new Element(posX, posY, new this.props.newElementShape());
         newEle.onContextMenuCallback = this.props.onElementContextMenu;
+        newEle.onClickCallback = this.props.onElementClick;
         newEle.onDoubleClickCallback = this.props.onElementDoubleClick;
         const newElements = this.state.elements;
         newElements.push(newEle);

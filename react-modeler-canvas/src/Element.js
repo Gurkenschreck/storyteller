@@ -13,6 +13,7 @@ class Element {
     h;
     drawableShape;
     onContextMenuCallback;
+    onClickCallback;
     onDoubleClickCallback;
 
     /**
@@ -56,7 +57,7 @@ class Element {
      */
     onClick(e, x_c, y_c) {
         this.text = `Clickposition - x_c: ${x_c}; y_c: ${y_c}`;
-        // TODO evaluate if onClickCallback shoudl be triggered
+        this.onClickCallback(this);
     }
 
     onDoubleClick() {
