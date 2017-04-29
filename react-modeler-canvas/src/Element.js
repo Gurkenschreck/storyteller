@@ -1,10 +1,16 @@
 import uuidV4 from 'uuid/v4';
+import ElementTransition from './ElementTransition';
 
 /**
  * An object of type Element represents a drawn
- * elemnt in the canvas.
+ * element in the canvas. IT defines the x and
+ * y coordinate of the drawn element. The property
+ * drawableShape is a property of type DrawableShape.
+ * This element delegates the drawing request
+ * including the canvas context to the drawable
+ * shape.
  */
-class Element {
+class Element { // TODO extends EventEmitter?
 
     uuid = uuidV4();
     x;
@@ -12,9 +18,11 @@ class Element {
     w;
     h;
     drawableShape;
-    onContextMenuCallback;
-    onClickCallback;
-    onDoubleClickCallback;
+    onContextMenuCallback = (thisEle) => {};
+    onClickCallback = (thisEle) => {};
+    onDoubleClickCallback = (thisEle) => {};
+    transitionsFrom = [];
+    transitionsTo = [];
 
     /**
      * Get an object containing the position of
@@ -46,6 +54,18 @@ class Element {
         this.onContextMenu = this.onContextMenu.bind(this);
     }
 
+    addTransitionTo(ele) {
+        const elementTransition = new ElementTransition(this, ele);
+        ele.transitionsFrom.push(elementTransition);
+        this.transitionsTo.push(elementTransition);
+    }
+
+    addTransitionFrom(ele) {
+        const elementTransition = new ElementTransition(ele, this);
+        ele.transitionsTo.push(elementTransition);
+        this.transitionsFrom.push(elementTransition);
+    }
+
     /**
      * Is called when the canvas detects a click, and
      * figures that this element is positioned under the
@@ -56,7 +76,6 @@ class Element {
      * @param {number} y_c The y position of the click.
      */
     onClick(e, x_c, y_c) {
-        this.text = `Clickposition - x_c: ${x_c}; y_c: ${y_c}`;
         this.onClickCallback(this);
     }
 

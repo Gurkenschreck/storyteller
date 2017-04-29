@@ -72,6 +72,8 @@ export class EditorCanvas extends Component {
             elements: props.elements
         }
 
+        this._renderElement = this._renderElement.bind(this);
+        this._renderElementTransitions = this._renderElementTransitions.bind(this);
         this._onClick = this._onClick.bind(this);
         this._onDoubleClick = this._onDoubleClick.bind(this);
         this._onMouseDown = this._onMouseDown.bind(this);
@@ -181,6 +183,10 @@ export class EditorCanvas extends Component {
         newEle.onClickCallback = this.props.onElementClick;
         newEle.onDoubleClickCallback = this.props.onElementDoubleClick;
         const newElements = this.state.elements;
+
+        if(typeof newElements[0] !== 'undefined') { // TODO remove
+            newEle.addTransitionFrom(newElements[0])
+        }
         newElements.push(newEle);
         this.setState({elements: newElements});
         return newEle;
@@ -194,13 +200,27 @@ export class EditorCanvas extends Component {
     update() {
         const canvas = this.refs.canvas;
         clearCanvas(canvas, '2d');
-        this.state.elements.forEach(e => {
-            const context = canvas.getContext('2d');
-            e.render(context);
-        });
+        this.state.elements.forEach(this._renderElement);
+        this.state.elements.forEach(this._renderElementTransitions);
     }
 
     /* PRIVATE FUNCTIONS */
+
+    _renderElement(ele) {
+        const ctx = this.refs.canvas.getContext('2d');
+        ele.render(ctx);
+    }
+
+    _renderElementTransitions(ele) {
+        const ctx = this.refs.canvas.getContext('2d');
+        ele.transitionsTo.forEach(et => {
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(et.transitionSource.x, et.transitionSource.y);
+            ctx.lineTo(et.transitionTarget.x, et.transitionTarget.y);
+            ctx.stroke();
+        });
+    }
 
     /**
      * Finds the first element which is positioned under the click.

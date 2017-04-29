@@ -21,7 +21,7 @@ function onElementContextMenu(element) {
 
 ReactDOM.render(
     <Canvas style={{backgroundColor: '#ddd'}}
-        newElementShape={PredefinedDrawableShape.CircleShape}
+        newElementShape={PredefinedDrawableShape.RectShape}
         onElementClick={onElementClick}
         onElementDoubleClick={onElementDoubleClick}
         onElementContextMenu={onElementContextMenu}
