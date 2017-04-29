@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import {Canvas, PredefinedDrawableShape} from 'react-modeler-canvas';
+import {Tab, Row, Col, Nav, NavItem} from 'react-bootstrap';
+import Act from './../domain/Act';
 
 class Modeler extends Component {
 
@@ -7,8 +9,12 @@ class Modeler extends Component {
         super(props);
         this.displayName = 'Modeler';
 
+        const initAct = new Act(
+            'First Act',
+            'Act description',
+        )
         this.state = {
-            elements: []
+            acts: []
         }
 
         this._onChange = this._onChange.bind(this);
@@ -18,7 +24,7 @@ class Modeler extends Component {
     }
 
     _onChange(element, all) {
-        this.setState({elements: all})
+        this.setState({acts: all})
     }
 
     _onElementClick(element) {
@@ -37,8 +43,26 @@ class Modeler extends Component {
         return (
             <div>
                 <h2>Hello!</h2>
+                <Tab.Container id="acts-tabs" defaultActiveKey="I">
+                    <Row className="clearfix">
+                        <Col sm={2}>
+                            <Nav bsStyle="pills" stacked>
+                                <NavItem eventKey="I">
+                                    I
+                                </NavItem>
+                            </Nav>
+                        </Col>
+                        <Col sm={10}>
+                            <Tab.Content animation>
+                                <Tab.Pane eventKey="I">
+                                    Somesinck I
+                                </Tab.Pane>
+                            </Tab.Content>
+                        </Col>
+                    </Row>
+                </Tab.Container>
                 <Canvas style={{backgroundColor: '#ddd'}}
-                    elements={this.state.elements}
+                    elements={this.state.acts}
                     onChange={this._onChange}
                     newElementShape={PredefinedDrawableShape.RectShape}
                     onElementClick={this._onElementClick}

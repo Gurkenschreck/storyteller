@@ -2,6 +2,10 @@
 
 printf "Setting things up for you...\n"
 
+printf "Removing old node_modules...\n"
+
+rm -rf storyteller-fe/node_modules react-modeler-canvas/node_modules
+
 printf "Installing storyteller-fe modules\n"
 cd storyteller-fe
 npm install
