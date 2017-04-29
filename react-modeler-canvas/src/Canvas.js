@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import Element from './Element';
 import DrawableShape from './DrawableShape';
 import DragHandler from './DragHandler';

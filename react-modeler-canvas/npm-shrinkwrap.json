@@ -69,7 +69,7 @@
     },
     "prop-types": {
       "version": "15.5.8",
-      "from": "prop-types@>=15.5.7 <16.0.0",
+      "from": "https://registry.npmjs.org/prop-types/-/prop-types-15.5.8.tgz",
       "resolved": "https://registry.npmjs.org/prop-types/-/prop-types-15.5.8.tgz"
     },
     "react": {

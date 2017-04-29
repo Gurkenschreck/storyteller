@@ -1,10 +1,6 @@
 import React, {Component} from 'react';
 import {Canvas, PredefinedDrawableShape} from 'react-modeler-canvas';
 
-
-
-
-
 class Modeler extends Component {
 
     constructor(props) {
