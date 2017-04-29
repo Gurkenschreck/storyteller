@@ -1,6 +1,7 @@
 import uuidV4 from 'uuid/v4';
 import ElementTransition from './ElementTransition';
-
+import {EventEmitter} from 'events';
+console.log(EventEmitter);
 /**
  * An object of type Element represents a drawn
  * element in the canvas. IT defines the x and
@@ -10,7 +11,7 @@ import ElementTransition from './ElementTransition';
  * including the canvas context to the drawable
  * shape.
  */
-class Element { // TODO extends EventEmitter?
+class Element extends EventEmitter { // TODO extends EventEmitter?
 
     uuid = uuidV4();
     x;
@@ -42,6 +43,7 @@ class Element { // TODO extends EventEmitter?
         y = 0,
         drawableShape
     ) {
+        super();
         this.x = x;
         this.y = y;
 
@@ -76,15 +78,15 @@ class Element { // TODO extends EventEmitter?
      * @param {number} y_c The y position of the click.
      */
     onClick(e, x_c, y_c) {
-        this.onClickCallback(this);
+        this.emit('click', this);
     }
 
     onDoubleClick() {
-        this.onDoubleClickCallback(this);
+        this.emit('doubleClick', this);
     }
 
     onContextMenu() {
-        this.onContextMenuCallback(this);
+        this.emit('contextMenu', this);
     }
 
     /**

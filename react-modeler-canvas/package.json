@@ -16,6 +16,7 @@
   "author": "Mario Giugno",
   "license": "MIT",
   "dependencies": {
+    "events": "1.1.1",
     "react": "15.5.4",
     "react-dom": "15.5.4",
     "uuid": "3.0.1"

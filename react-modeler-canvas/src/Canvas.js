@@ -179,9 +179,9 @@ export class EditorCanvas extends Component {
      */
     addNewElement(posX, posY) {
         const newEle = new Element(posX, posY, new this.props.newElementShape());
-        newEle.onContextMenuCallback = this.props.onElementContextMenu;
-        newEle.onClickCallback = this.props.onElementClick;
-        newEle.onDoubleClickCallback = this.props.onElementDoubleClick;
+        newEle.on('click', this.props.onElementClick);
+        newEle.on('doubleClick', this.props.onElementDoubleClick);
+        newEle.on('contextMenu', this.props.onElementContextMenu);
         const newElements = this.state.elements;
 
         if(typeof newElements[0] !== 'undefined') { // TODO remove
