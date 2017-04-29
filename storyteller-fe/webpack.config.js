@@ -6,7 +6,7 @@ var conf = {
         modeler: path.join(__dirname, 'src/main-modeler.js')
     },
     output: {
-        path: path.join(__dirname, 'lib'),
+        path: path.join(__dirname, 'www'),
         filename: '[name].js'
     },
     module: {
@@ -25,7 +25,7 @@ var conf = {
 
     devServer: {
         port: 4711,
-        contentBase: 'lib',
+        contentBase: 'www',
         inline: true
     }
 }
