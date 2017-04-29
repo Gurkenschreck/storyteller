@@ -23,6 +23,7 @@ export class EditorCanvas extends Component {
 
     static propTypes = {
         elements: PropTypes.arrayOf(Element),
+        onChange: PropTypes.func,
 
         /* Canvas properties */
         id: PropTypes.string,
@@ -44,6 +45,7 @@ export class EditorCanvas extends Component {
 
     static defaultProps = {
         elements: [],
+        onChange: (element, all) => {},
 
         /* Canvas properties */
         id: '',
@@ -87,8 +89,11 @@ export class EditorCanvas extends Component {
 
     componentDidMount() {
         this._dragHandler = new DragHandler(this.refs.canvas)
-
         this.update();
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({elements: nextProps.elements});
     }
 
     /* CANVAS HANDLERS */
@@ -100,29 +105,20 @@ export class EditorCanvas extends Component {
     _onClick(e) {
         e.preventDefault();
         const {x_c, y_c} = this._getClickPosition(e);
-
         if(!this._dragHandler.wasDragged) {
-            console.log(`Clicking here: x_c:${x_c} and y_c:${y_c}`);
             const elementUnderClick = this._findFirstChildUnderClick(x_c, y_c);
             if(elementUnderClick) {
                 elementUnderClick.onClick(e, x_c, y_c);
             }
-        } else {
-            console.log(`Releasing here: x_c:${x_c} and y_c:${y_c}`, e);
         }
-
         this._dragHandler.handleDraggingReset();
-
         this.update();
     }
 
     _onDoubleClick(e) {
         e.preventDefault();
-        console.log(`Doubleclick`);
-
         const {x_c, y_c} = this._getClickPosition(e);
         const clickedElement = this._findFirstChildUnderClick(x_c, y_c);
-
         if(clickedElement) {
             clickedElement.onDoubleClick();
         } else {
@@ -147,7 +143,6 @@ export class EditorCanvas extends Component {
     _onMouseMove(e) {
         e.preventDefault();
         const {x_c, y_c} = this._getClickPosition(e);
-
         if(this._dragHandler.isDragging) {
             this._dragHandler.applyTransition(x_c, y_c);
             this.update();
@@ -189,6 +184,7 @@ export class EditorCanvas extends Component {
         }
         newElements.push(newEle);
         this.setState({elements: newElements});
+        this.props.onChange(newEle, newElements);
         return newEle;
     }
 
@@ -198,8 +194,7 @@ export class EditorCanvas extends Component {
      * @returns {undefined}
      */
     update() {
-        const canvas = this.refs.canvas;
-        clearCanvas(canvas, '2d');
+        clearCanvas(this.refs.canvas, '2d');
         this.state.elements.forEach(this._renderElement);
         this.state.elements.forEach(this._renderElementTransitions);
     }
@@ -260,24 +255,22 @@ export class EditorCanvas extends Component {
 
     render() {
         return (
-            <div>
-                <div>Hello</div>
-                <canvas ref="canvas"
-                        id={this.props.id}
-                        style={this.props.style}
-                        width={this.props.width}
-                        height={this.props.height}
-                        onClick={this._onClick}
-                        onDoubleClick={this._onDoubleClick}
-                        onMouseDown={this._onMouseDown}
-                        onMouseMove={this._onMouseMove}
-                        onContextMenu={this._onContextMenu}>
+            <canvas ref="canvas"
+                    id={this.props.id}
+                    style={this.props.style}
+                    width={this.props.width}
+                    height={this.props.height}
+                    onClick={this._onClick}
+                    onDoubleClick={this._onDoubleClick}
+                    onMouseDown={this._onMouseDown}
+                    onMouseMove={this._onMouseMove}
+                    onContextMenu={this._onContextMenu}>
 
-                    Please use an updated browser that supports the HTML5 canvas element.
-                    Try creating an adventure using pen and paper...
-                </canvas>
-            </div>
+                Please use an updated browser that supports the HTML5 canvas element.
+                Try creating an adventure using pen and paper...
+            </canvas>
         )
     }
 }
+
 export default EditorCanvas;

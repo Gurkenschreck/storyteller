@@ -3,7 +3,7 @@ var path = require('path')
 
 var conf = {
     entry: {
-        modeler: path.join(__dirname, 'src/modeler.js')
+        modeler: path.join(__dirname, 'src/main-modeler.js')
     },
     output: {
         path: path.join(__dirname, 'lib'),
