@@ -1,7 +1,7 @@
 import uuidV4 from 'uuid/v4';
 import ElementTransition from './ElementTransition';
 import {EventEmitter} from 'events';
-console.log(EventEmitter);
+
 /**
  * An object of type Element represents a drawn
  * element in the canvas. IT defines the x and
