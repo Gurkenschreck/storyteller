@@ -10,6 +10,9 @@ console.log(EventEmitter);
  * This element delegates the drawing request
  * including the canvas context to the drawable
  * shape.
+ *
+ * The width and height is defined by the passed
+ * in drawable shape.
  */
 class Element extends EventEmitter { // TODO extends EventEmitter?
 
@@ -19,9 +22,6 @@ class Element extends EventEmitter { // TODO extends EventEmitter?
     w;
     h;
     drawableShape;
-    onContextMenuCallback = (thisEle) => {};
-    onClickCallback = (thisEle) => {};
-    onDoubleClickCallback = (thisEle) => {};
     transitionsFrom = [];
     transitionsTo = [];
 
