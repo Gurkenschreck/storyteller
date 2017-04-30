@@ -1,6 +1,7 @@
 import uuidV4 from 'uuid/v4';
 import {EventEmitter} from 'events';
 import ElementTransition from './ElementTransition';
+import {autobind_functions} from './autobind_functions';
 
 /**
  * An object of type Element represents a drawn
@@ -51,9 +52,7 @@ class Element extends EventEmitter {
         this.h = drawableShape.height;
         this.drawableShape = drawableShape;
 
-        this.onClick = this.onClick.bind(this);
-        this.onDoubleClick = this.onDoubleClick.bind(this);
-        this.onContextMenu = this.onContextMenu.bind(this);
+        autobind_functions(this);
     }
 
     addTransitionTo(ele) {

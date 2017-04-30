@@ -11,9 +11,5 @@ class ElementTransition {
         this.transitionTarget = transitionTarget;
     }
 
-    delete() {
-
-    }
-
 }
 export default ElementTransition;

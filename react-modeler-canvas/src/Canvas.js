@@ -11,6 +11,7 @@ import {
 import {
     isRightMouseButton
 } from './MouseUtils';
+import {autobind_functions} from './autobind_functions';
 
 /**
  * Canvas to draw 2d elements.
@@ -75,15 +76,7 @@ export class EditorCanvas extends Component {
             elements: props.elements
         }
 
-        this._renderElement = this._renderElement.bind(this);
-        this._renderElementTransitions = this._renderElementTransitions.bind(this);
-        this._onClick = this._onClick.bind(this);
-        this._onDoubleClick = this._onDoubleClick.bind(this);
-        this._onMouseDown = this._onMouseDown.bind(this);
-        this._onMouseMove = this._onMouseMove.bind(this);
-        this._onContextMenu = this._onContextMenu.bind(this);
-        this.update = this.update.bind(this);
-        this._getClickPosition = this._getClickPosition.bind(this);
+        autobind_functions(this);
     }
 
     /* LIFECYCLE METHODS */
