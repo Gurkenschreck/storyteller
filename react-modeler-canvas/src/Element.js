@@ -14,7 +14,7 @@ import {EventEmitter} from 'events';
  * The width and height is defined by the passed
  * in drawable shape.
  */
-class Element extends EventEmitter { // TODO extends EventEmitter?
+class Element extends EventEmitter {
 
     uuid = uuidV4();
     x;
