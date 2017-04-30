@@ -93,7 +93,6 @@ export class EditorCanvas extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log('Canvas willreceiveprops', nextProps);
         this.setState({elements: nextProps.elements});
     }
 

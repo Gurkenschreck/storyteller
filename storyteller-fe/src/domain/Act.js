@@ -1,6 +1,7 @@
 import uuidV4 from 'uuid/v4';
 import {EventEmitter} from 'events';
 import Scene from './Scene';
+import {autobind_functions} from './../utils/autobind_functions';
 
 class Act extends EventEmitter {
 
@@ -15,12 +16,12 @@ class Act extends EventEmitter {
         this.description = description;
         this.scenes = scenes;
 
-        this.addScene = this.addScene.bind(this);
-        this.removeScene = this.removeScene.bind(this);
+        autobind_functions(this);
     }
 
-    addScene() {
+    addScene(uuid) {
         const newScene = new Scene(this);
+        newScene.uuid = uuid || newScene.uuid;
         this.scenes.push(newScene);
         this.emit('sceneAdded', this, newScene);
     }
