@@ -18,32 +18,41 @@ class Modeler extends Component {
             'Secont Act',
             'Act description'
         )
-        const acts = {};
-        acts[initAct.uuid] = initAct;
-        acts[secondAct.uuid] = secondAct;
+        initAct.on('sceneAdded', this._sceneAdded);
+        secondAct.on('sceneAdded', this._sceneAdded);
+        const actElementConnector = {};
+        actElementConnector[initAct.uuid] ={};
+        actElementConnector[initAct.uuid].act = initAct;
+        actElementConnector[secondAct.uuid] = {};
+        actElementConnector[secondAct.uuid].act = secondAct;
         this.state = {
             currentAct: initAct.uuid,
-            acts
+            actElementConnector
         }
 
-        this._onChange = this._onChange.bind(this);
+        this._sceneAdded = this._sceneAdded.bind(this);
+        this._onElementAdded = this._onElementAdded.bind(this);
         this._onElementClick = this._onElementClick.bind(this);
         this._onElementDoubleClick = this._onElementDoubleClick.bind(this);
         this._onElementContextMenu = this._onElementContextMenu.bind(this);
-
         this._handleSelect = this._handleSelect.bind(this);
     }
 
-    /* react-modeler-canvas callbacks */
-    _onChange(element, all) {
+    /* act event handler */
 
-        // check if element is vorhanden
-        const acts = this.state.acts;
-        const curAct = acts[this.state.currentAct];
-        if(!curAct.scenes.some(scene => scene.uuid === element.uuid)) {
-            curAct.addScene();
-            this.setState({acts});
-        }
+    _sceneAdded(act, addedScene) {
+        console.log('scene added', act, addedScene);
+    }
+
+    /* react-modeler-canvas callbacks */
+    _onElementAdded(element, canvasElements) {
+
+        const actElementConnector = this.state.actElementConnector;
+        const curActSceConn = actElementConnector[this.state.currentAct];
+        curActSceConn.elements = canvasElements;
+        curActSceConn.act.addScene();
+        console.log('Added ele to ', curActSceConn, actElementConnector);
+        this.setState({actElementConnector});
     }
 
     _onElementClick(element) {
@@ -64,8 +73,10 @@ class Modeler extends Component {
     }
 
     render() {
-        const acts = this.state.acts;
-        const actsKeys = Object.keys(this.state.acts);
+        const aec = this.state.actElementConnector;
+        const currentAEC = aec[this.state.currentAct];
+        console.log('Rendering ', this.state, currentAEC, aec);
+        const actsKeys = Object.keys(aec);
         return (
             <div>
                 <h2>Hello!</h2>
@@ -75,8 +86,8 @@ class Modeler extends Component {
                             {
                                 actsKeys.map((actKey, i) => {
                                     return (
-                                        <NavItem key={acts[actKey].title} eventKey={acts[actKey].uuid}>
-                                            {acts[actKey].title}
+                                        <NavItem key={aec[actKey].act.title} eventKey={aec[actKey].act.uuid}>
+                                            {aec[actKey].act.title}
                                         </NavItem>
                                     );
                                 })
@@ -85,7 +96,8 @@ class Modeler extends Component {
                     </Col>
                     <Col sm={11}>
                         <Canvas style={{backgroundColor: '#ddd'}}
-                            onChange={this._onChange}
+                            elements={currentAEC.elements}
+                            onElementAdded={this._onElementAdded}
                             newElementShape={PredefinedDrawableShape.RectShape}
                             onElementClick={this._onElementClick}
                             onElementDoubleClick={this._onElementDoubleClick}

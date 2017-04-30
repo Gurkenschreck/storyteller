@@ -24,7 +24,7 @@ export class EditorCanvas extends Component {
 
     static propTypes = {
         elements: PropTypes.arrayOf(Element),
-        onChange: PropTypes.func,
+        onElementAdded: PropTypes.func,
 
         /* Canvas properties */
         id: PropTypes.string,
@@ -46,7 +46,7 @@ export class EditorCanvas extends Component {
 
     static defaultProps = {
         elements: [],
-        onChange: (element, all) => {},
+        onElementAdded: (element, all) => {},
 
         /* Canvas properties */
         id: '',
@@ -94,7 +94,12 @@ export class EditorCanvas extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        console.log('Canvas willreceiveprops', nextProps);
         this.setState({elements: nextProps.elements});
+    }
+
+    componentDidUpdate() {
+        this.update();
     }
 
     /* CANVAS HANDLERS */
@@ -185,7 +190,7 @@ export class EditorCanvas extends Component {
         }
         newElements.push(newEle);
         this.setState({elements: newElements});
-        this.props.onChange(newEle, newElements);
+        this.props.onElementAdded(newEle, newElements);
         return newEle;
     }
 

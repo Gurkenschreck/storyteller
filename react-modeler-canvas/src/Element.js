@@ -1,13 +1,13 @@
 import uuidV4 from 'uuid/v4';
-import ElementTransition from './ElementTransition';
 import {EventEmitter} from 'events';
+import ElementTransition from './ElementTransition';
 
 /**
  * An object of type Element represents a drawn
- * element in the canvas. IT defines the x and
+ * element on the canvas. It describes the x and
  * y coordinate of the drawn element. The property
- * drawableShape is a property of type DrawableShape.
- * This element delegates the drawing request
+ * drawableShape is of type DrawableShape.
+ * The element delegates the rendering/drawing request
  * including the canvas context to the drawable
  * shape.
  *
