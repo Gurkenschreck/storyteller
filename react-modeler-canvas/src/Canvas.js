@@ -87,7 +87,6 @@ export class EditorCanvas extends Component {
     }
 
     /* LIFECYCLE METHODS */
-
     componentDidMount() {
         this._dragHandler = new DragHandler(this.refs.canvas)
         this.update();

@@ -23,8 +23,10 @@ class Modeler extends Component {
         const actElementConnector = {};
         actElementConnector[initAct.uuid] ={};
         actElementConnector[initAct.uuid].act = initAct;
+        actElementConnector[initAct.uuid].elements = [];
         actElementConnector[secondAct.uuid] = {};
         actElementConnector[secondAct.uuid].act = secondAct;
+        actElementConnector[secondAct.uuid].elements = [];
         this.state = {
             currentAct: initAct.uuid,
             actElementConnector
