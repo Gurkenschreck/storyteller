@@ -1,20 +1,21 @@
 import uuidV4 from 'uuid/v4';
-import ElementTransition from './ElementTransition';
 import {EventEmitter} from 'events';
+import ElementTransition from './ElementTransition';
+import {autobind_functions} from './autobind_functions';
 
 /**
  * An object of type Element represents a drawn
- * element in the canvas. IT defines the x and
+ * element on the canvas. It describes the x and
  * y coordinate of the drawn element. The property
- * drawableShape is a property of type DrawableShape.
- * This element delegates the drawing request
+ * drawableShape is of type DrawableShape.
+ * The element delegates the rendering/drawing request
  * including the canvas context to the drawable
  * shape.
  *
  * The width and height is defined by the passed
  * in drawable shape.
  */
-class Element extends EventEmitter { // TODO extends EventEmitter?
+class Element extends EventEmitter {
 
     uuid = uuidV4();
     x;
@@ -51,9 +52,7 @@ class Element extends EventEmitter { // TODO extends EventEmitter?
         this.h = drawableShape.height;
         this.drawableShape = drawableShape;
 
-        this.onClick = this.onClick.bind(this);
-        this.onDoubleClick = this.onDoubleClick.bind(this);
-        this.onContextMenu = this.onContextMenu.bind(this);
+        autobind_functions(this);
     }
 
     addTransitionTo(ele) {

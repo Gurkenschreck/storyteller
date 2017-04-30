@@ -3,6 +3,7 @@ import {
     getMousePosition,
     isClickInElementBoundaries
 } from './CanvasUtils';
+import {autobind_functions} from './autobind_functions';
 
 /**
  * The DragHandler manages the dragging functionality
@@ -19,9 +20,7 @@ class DragHandler {
 
     constructor(canvas) {
         this.canvas = canvas,
-        this.handleDraggingForElement = this.handleDraggingForElement.bind(this);
-        this.applyTransition = this.applyTransition.bind(this);
-        this.handleDraggingReset = this.handleDraggingReset.bind(this);
+        autobind_functions(this);
     }
 
     /**
