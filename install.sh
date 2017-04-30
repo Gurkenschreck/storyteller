@@ -20,6 +20,7 @@ cd node_modules/
 printf "Removing existing react\n"
 rm -rf react/
 printf "Creating softlink\n"
-ln -s ../../storyteller-fe/node_modules/react/ react
+npm link ../../storyteller-fe/node_modules/react
+#ln -s ../../storyteller-fe/node_modules/react/ react
 
 printf "Finished.\n"
