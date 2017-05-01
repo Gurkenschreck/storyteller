@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import {Canvas, PredefinedDrawableShape} from 'react-modeler-canvas';
 import {Tab, Row, Col, Nav, NavItem} from 'react-bootstrap';
+import ActEditor from './../components/ActEditor';
+import SceneEditor from './../components/SceneEditor';
 import Act from './../domain/Act';
 import Scene from './../domain/Scene';
 import ActCanvasConnector from './../domain/ActCanvasConnector';
@@ -13,21 +15,18 @@ class Modeler extends Component {
         this.displayName = 'Modeler';
 
         this.state = {
-            currentAct: '',
+            currentActUUID: '',
+            currentSceneUUID: '',
             actCanvasConnectors: []
         }
 
         autobind_functions(this);
     }
 
-    /* act event handler */
-    _sceneAdded(act, addedScene) {
-    }
-
     /* react-modeler-canvas callbacks */
     _onElementAdded(element, canvasElements) {
         const actCanvasConnectors = this.state.actCanvasConnectors;
-        const currentActCanConnector = actCanvasConnectors.find(acc => this.state.currentAct === acc.act.uuid);
+        const currentActCanConnector = actCanvasConnectors.find(acc => this.state.currentActUUID === acc.act.uuid);
         currentActCanConnector.elements = canvasElements;
         currentActCanConnector.act.addScene(element.uuid);
         this.setState({actCanvasConnectors});
@@ -35,6 +34,7 @@ class Modeler extends Component {
 
     _onElementClick(element) {
         console.log(`Element click for`, element);
+        this.setState({currentSceneUUID: element.uuid});        
     }
 
     _onElementDoubleClick(element) {
@@ -47,18 +47,50 @@ class Modeler extends Component {
 
      _handleSelect(selectedKey) {
         if(selectedKey === 'add-act') {
-            const actElementConnectors = this.state.actCanvasConnectors;
+            const actCanvasConnectors = this.state.actCanvasConnectors;
             const acc = new ActCanvasConnector();
-            actElementConnectors.push(acc);
-            this.setState({actElementConnectors});
+            actCanvasConnectors.push(acc);
+            this.setState({actCanvasConnectors});
         } else {
-            this.setState({currentAct: selectedKey});
+            this.setState({currentActUUID: selectedKey, currentSceneUUID: ''});
         }
+    }
+
+    _editorChange(abc) {
+        this.forceUpdate();
+    }
+
+    _determineEditorToDisplay() {
+        const actCanvasConnectors = this.state.actCanvasConnectors;
+        const currentActCanConnector = actCanvasConnectors.find(acc => this.state.currentActUUID === acc.act.uuid);
+
+        if(currentActCanConnector) {
+            if(this.state.currentSceneUUID) {
+                const selectedScene = currentActCanConnector.act.scenes.find(scene => {
+                    return scene.uuid === this.state.currentSceneUUID
+                });
+                return (
+                    <SceneEditor
+                        scene={selectedScene} 
+                        onSceneChange={this._editorChange}
+                    />
+                );
+            } else {
+                return (
+                    <ActEditor 
+                        act={currentActCanConnector.act} 
+                        onActChange={this._editorChange}
+                    />
+                );
+            }
+        }
+        return null;
     }
 
     render() {
         const actCanvasConnectors = this.state.actCanvasConnectors;
-        const currentActCanConnector = actCanvasConnectors.find(acc => this.state.currentAct === acc.act.uuid);
+        const currentActCanConnector = actCanvasConnectors.find(acc => this.state.currentActUUID === acc.act.uuid);
+
         return (
             <div>
                 <h2>Hello!</h2>
@@ -79,9 +111,9 @@ class Modeler extends Component {
                             </NavItem>
                         </Nav>
                     </Col>
-                    <Col sm={11}>
-                        {
-                            currentActCanConnector ?
+                    {
+                        currentActCanConnector ? 
+                            <Col sm={5}>
                                 <Canvas style={{backgroundColor: '#ddd'}}
                                     elements={currentActCanConnector.elements}
                                     onElementAdded={this._onElementAdded}
@@ -90,8 +122,11 @@ class Modeler extends Component {
                                     onElementDoubleClick={this._onElementDoubleClick}
                                     onElementContextMenu={this._onElementContextMenu}
                                 />
-                                : null
-                        }
+                            </Col>
+                            : null
+                    }
+                    <Col sm={6}>
+                        {this._determineEditorToDisplay()}
                     </Col>
                 </Row>
             </div>

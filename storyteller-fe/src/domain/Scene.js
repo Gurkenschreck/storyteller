@@ -4,6 +4,8 @@ class Scene {
 
     uuid = uuidV4();
     act;
+    title = '';
+    description = '';
 
     constructor(act) {
         this.act = act;
