@@ -53,7 +53,7 @@ class ActEditor extends Component {
                     Description
                 </Col>
                 <Col sm={10}>
-                    <FormControl type="textarea" name="description"
+                    <FormControl componentClass="textarea" name="description"
                     onChange={this._inputChange}
                     value={this.state.act.description} />
                 </Col>
