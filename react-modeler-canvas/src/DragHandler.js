@@ -9,7 +9,7 @@ import {autobind_functions} from './autobind_functions';
  * The DragHandler manages the dragging functionality
  * of the canvas elements.
  */
-class DragHandler {
+class DragHandler { // TODO change DragHandler to MouseHandler with events?
 
     canvas;
     isDragging = false;

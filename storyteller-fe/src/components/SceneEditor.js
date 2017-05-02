@@ -1,37 +1,58 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {Form, FormGroup, FormControl, ControlLabel, Col} from 'react-bootstrap';
+import clonedeep from 'lodash.clonedeep';
 import {autobind_functions} from './../utils/autobind_functions';
 
 class SceneEditor extends Component {
 
     static propTypes = {
         scene: PropTypes.object.isRequired,
-        onSceneChange: PropTypes.func
+        onChange: PropTypes.func,
+        onBlur: PropTypes.func
     }
 
     static defaultProps = {
-        onSceneChange: (scene) => {}
+        onChange: (scene) => {},
+        onBlur: (scene) => {}
     }
+
+    bundledInputHandlers;
 
     constructor(props) {
         super(props);
         this.displayName = "SceneEditor";
-        this.state = {
-            scene: props.scene
-        }
         autobind_functions(this);
+        
+        this.state = {
+            scene: clonedeep(props.scene)
+        }
+
+        this.bundledInputHandlers = {
+            onChange: this._handleChange,
+            onBlur: this._handleBlur
+        }
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState({scene: nextProps.scene});
+        this.setState({scene: clonedeep(nextProps.scene)});
     }
 
-    _inputChange(event) {
-        const newState = {...this.state};
-        newState.scene[event.target.name] = event.target.value;
-        this.setState(newState);
-        this.props.onSceneChange(newState.scene);
+    _handleChange(event) {
+        const scene = this._updateState(event);
+        this.props.onChange(clonedeep(scene));
+    }
+
+    _handleBlur(event) {
+        const scene = this._updateState(event);
+        this.props.onBlur(clonedeep(scene));
+    }
+
+    _updateState(event) {
+        const scene = clonedeep(this.state).scene;
+        scene[event.target.name] = event.target.value;
+        this.setState({scene});
+        return scene;
     }
 
     render() {
@@ -43,8 +64,8 @@ class SceneEditor extends Component {
                 </Col>
                 <Col sm={10}>
                     <FormControl type="text" name="title"
-                    onChange={this._inputChange}
-                    value={this.state.scene.title} />
+                    value={this.state.scene.title}
+                    {...this.bundledInputHandlers} />
                 </Col>
                 </FormGroup>
 
@@ -54,8 +75,8 @@ class SceneEditor extends Component {
                 </Col>
                 <Col sm={10}>
                     <FormControl componentClass="textarea" name="description"
-                    onChange={this._inputChange}
-                    value={this.state.scene.description} />
+                    value={this.state.scene.description} 
+                    {...this.bundledInputHandlers} />
                 </Col>
                 </FormGroup>
             </Form>

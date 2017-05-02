@@ -56,7 +56,17 @@ class Modeler extends Component {
         }
     }
 
-    _editorChange(abc) {
+    _handleSceneEditorBlur(scene) {
+        // TODO refactor
+        const actCanvasConnector = this._getActCanvasConnectorFromState(scene.act.uuid);
+        const sce = actCanvasConnector.act.scenes.find(sc => sc.uuid === scene.uuid);
+        actCanvasConnector.act.scenes[actCanvasConnector.act.scenes.indexOf(sce)] = scene;
+        this.forceUpdate();
+    }
+
+    _handleActEditorBlur(act) {
+        const actCanvasConnector = this._getActCanvasConnectorFromState(act.uuid);
+        actCanvasConnector.act = act;
         this.forceUpdate();
     }
 
@@ -72,14 +82,14 @@ class Modeler extends Component {
                 return (
                     <SceneEditor
                         scene={selectedScene}
-                        onSceneChange={this._editorChange}
+                        onBlur={this._handleSceneEditorBlur}
                     />
                 );
             } else {
                 return (
                     <ActEditor
                         act={currentActCanConnector.act}
-                        onChange={this._editorChange} // TODO change to use onBlur
+                        onBlur={this._handleActEditorBlur} // TODO change to use onBlur
                     />
                 );
             }
@@ -89,10 +99,10 @@ class Modeler extends Component {
 
     /* Util */
 
-    _getActFromState(actUUID) {
+    _getActCanvasConnectorFromState(actUUID) {
         const currentActCanConnector = this.state.actCanvasConnectors
-            .find(acc => acc.uuid === actUUID);
-        return currentActCanConnector.act;
+            .find(acc => acc.act.uuid === actUUID);
+        return currentActCanConnector;
     }
 
     render() {

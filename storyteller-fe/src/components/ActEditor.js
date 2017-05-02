@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {Form, FormGroup, FormControl, ControlLabel, Col} from 'react-bootstrap';
+import clonedeep from 'lodash.clonedeep';
 import {autobind_functions} from './../utils/autobind_functions';
 
 /**
@@ -23,20 +24,22 @@ class ActEditor extends Component {
         onBlur: (act) => {}
     }
 
-    // TODO check if this works
-    bundledInputHandlers = {
-        onChange: this._handleChange,
-        onBlur: this._handleBlur
-    }
+    bundledInputHandlers;
 
     constructor(props) {
         super(props);
         this.displayName = "ActEditor";
+        autobind_functions(this);
+        
         // TODO make state an immutable-js obj?
         this.state = {
             act: clonedeep(props.act)
         }
-        autobind_functions(this);
+
+        this.bundledInputHandlers = {
+            onChange: this._handleChange,
+            onBlur: this._handleBlur
+        }
     }
 
     componentWillReceiveProps(nextProps) {
@@ -45,17 +48,20 @@ class ActEditor extends Component {
 
     _handleChange(event) {
         // TODO use immutablejs
-        const act = clonedeep(this.state).act;
-        act[event.target.name] = event.target.value;
-        this.setState({act});
+        const act = this._updateState(event);
         this.props.onChange(act);
     }
 
     _handleBlur(event) {
+        const act = this._updateState(event);
+        this.props.onBlur(act);
+    }
+
+    _updateState(event) {
         const act = clonedeep(this.state).act;
         act[event.target.name] = event.target.value;
         this.setState({act});
-        this.props.onBlur(act);
+        return act;
     }
 
     render() {
@@ -67,8 +73,8 @@ class ActEditor extends Component {
                 </Col>
                 <Col sm={10}>
                     <FormControl type="text" name="title"
-                    {...this.bundledInputHandlers}
-                    value={this.state.act.title} />
+                    value={this.state.act.title}
+                    {...this.bundledInputHandlers} />
                 </Col>
                 </FormGroup>
 
@@ -78,8 +84,8 @@ class ActEditor extends Component {
                 </Col>
                 <Col sm={10}>
                     <FormControl componentClass="textarea" name="description"
-                    {...this.bundledInputHandlers}
-                    value={this.state.act.description} />
+                    value={this.state.act.description} 
+                    {...this.bundledInputHandlers} />
                 </Col>
                 </FormGroup>
             </Form>
