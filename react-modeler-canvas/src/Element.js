@@ -55,12 +55,25 @@ class Element extends EventEmitter {
         autobind_functions(this);
     }
 
+    /**
+     * Add an element that the current element can transition
+     * to. A new ElementTransition will be instantiated with
+     * the current Element instance is the transitionSource
+     * and the parameter ele is the transitionTarget.
+     * @param {Element} ele
+     */
     addTransitionTo(ele) {
         const elementTransition = new ElementTransition(this, ele);
         ele.transitionsFrom.push(elementTransition);
         this.transitionsTo.push(elementTransition);
     }
 
+    /**
+     * Add an element that the current element can transition
+     * from.
+     * @see addTransitionTo
+     * @param {Element} ele
+     */
     addTransitionFrom(ele) {
         const elementTransition = new ElementTransition(ele, this);
         ele.transitionsTo.push(elementTransition);

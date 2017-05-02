@@ -34,7 +34,7 @@ class Modeler extends Component {
 
     _onElementClick(element) {
         console.log(`Element click for`, element);
-        this.setState({currentSceneUUID: element.uuid});        
+        this.setState({currentSceneUUID: element.uuid});
     }
 
     _onElementDoubleClick(element) {
@@ -71,20 +71,28 @@ class Modeler extends Component {
                 });
                 return (
                     <SceneEditor
-                        scene={selectedScene} 
+                        scene={selectedScene}
                         onSceneChange={this._editorChange}
                     />
                 );
             } else {
                 return (
-                    <ActEditor 
-                        act={currentActCanConnector.act} 
-                        onActChange={this._editorChange}
+                    <ActEditor
+                        act={currentActCanConnector.act}
+                        onChange={this._editorChange} // TODO change to use onBlur
                     />
                 );
             }
         }
         return null;
+    }
+
+    /* Util */
+
+    _getActFromState(actUUID) {
+        const currentActCanConnector = this.state.actCanvasConnectors
+            .find(acc => acc.uuid === actUUID);
+        return currentActCanConnector.act;
     }
 
     render() {
@@ -112,7 +120,7 @@ class Modeler extends Component {
                         </Nav>
                     </Col>
                     {
-                        currentActCanConnector ? 
+                        currentActCanConnector ?
                             <Col sm={5}>
                                 <Canvas style={{backgroundColor: '#ddd'}}
                                     elements={currentActCanConnector.elements}
