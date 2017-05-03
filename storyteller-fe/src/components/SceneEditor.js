@@ -35,23 +35,26 @@ class SceneEditor extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        console.log(this, nextProps);
         this.setState({scene: clonedeep(nextProps.scene)});
     }
 
     _handleChange(event) {
-        const scene = this._updateState(event);
-        this.props.onChange(clonedeep(scene));
+        const scene = this._updateState(event, () => {
+            this.props.onChange(clonedeep(scene));
+        });
     }
 
     _handleBlur(event) {
-        const scene = this._updateState(event);
-        this.props.onBlur(clonedeep(scene));
+        const scene = this._updateState(event, () => {
+            this.props.onBlur(clonedeep(scene));
+        });
     }
 
-    _updateState(event) {
+    _updateState(event, callback) {
         const scene = clonedeep(this.state).scene;
         scene[event.target.name] = event.target.value;
-        this.setState({scene});
+        this.setState({scene}, callback);
         return scene;
     }
 

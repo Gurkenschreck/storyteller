@@ -48,19 +48,21 @@ class ActEditor extends Component {
 
     _handleChange(event) {
         // TODO use immutablejs
-        const act = this._updateState(event);
-        this.props.onChange(act);
+        const act = this._updateState(event, () => {
+            this.props.onChange(act);            
+        });
     }
 
     _handleBlur(event) {
-        const act = this._updateState(event);
-        this.props.onBlur(act);
+        const act = this._updateState(event, () => {
+            this.props.onBlur(act);
+        });
     }
 
-    _updateState(event) {
+    _updateState(event, callback) {
         const act = clonedeep(this.state).act;
         act[event.target.name] = event.target.value;
-        this.setState({act});
+        this.setState({act}, callback);
         return act;
     }
 

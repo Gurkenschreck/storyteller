@@ -7,9 +7,12 @@ import {autobind_functions} from './../utils/autobind_functions';
 /**
  * An act is a definite section of a story. One story
  * can have several acts, and one act is made up of
- * several scenes
- * .
+ * several scenes.
+ * 
  * Class-Events:
+ * titleChanged(act, oldTitle, newTitle)
+ * descriptionChanged(act, oldDescription, newDescription)
+ * scenesChanged(act, oldScenes, newScenes)
  * sceneActChanged(act, scene, oldact (this), newAct)
  * sceneTitleChanged(act, scene, oldTitle, newTitle)
  * sceneDescriptionChanged(act, scene, oldDescription, newDescription)
@@ -17,15 +20,72 @@ import {autobind_functions} from './../utils/autobind_functions';
 class Act extends EventEmitter {
 
     uuid = uuidV4();
-    title;
-    description;
-    scenes;
+    _title;
+    _description;
+    _scenes;
+    _selected;
+    _active;
+
+    get title() {
+        return this._title;
+    }
+
+    set title(title) {
+        const oldTitle = this._title;
+        this._title = title;
+        this.emit('titleChanged', this, oldTitle, title);
+    }
+
+    get description() {
+        return this._description;
+    }
+
+    set description(description) {
+        const oldDescription = this._description;
+        this._description = description;
+        this.emit('descriptionChanged', this, oldDescription, description);
+    }
+
+    get scenes() {
+        return this._scenes;
+    }
+
+    set scenes(scenes) {
+        const oldScenes = this._scenes;
+        this._scenes = scenes;
+        this.emit('scenesChanged', this, oldScenes, scenes);
+    }
+
+    get selected() {
+        console.log('selected', this._selected);
+        return this._selected;
+    }
+
+    set selected(selected) {
+        
+        const oldSelected = this._selected;
+        this._selected = selected;
+        console.log('set selected', selected, this._selected);
+        this.emit('selectedChanged', this, selected);
+    }
+
+    get active() {
+        return this._active;
+    }
+
+    set active(active) {
+        const oldActive = this._active;
+        this._active = active;
+        this.emit('activeChanged', this, active);
+    }
 
     constructor(title, description, scenes = []) {
         super();
-        this.title = title;
-        this.description = description;
-        this.scenes = scenes;
+        this._title = title;
+        this._description = description;
+        this._scenes = scenes;
+        this._selected = false;
+        this._active = false;
 
         autobind_functions(this);
     }
@@ -36,15 +96,15 @@ class Act extends EventEmitter {
         newScene.on('actChanged', this.onSceneActChanged);
         newScene.on('titleChanged', this.onSceneTitleChanged);
         newScene.on('descriptionChanged', this.onSceneDescriptionChanged);
-        this.scenes.push(newScene);
+        this._scenes.push(newScene);
         this.emit('sceneAdded', this, newScene);
     }
 
     removeScene(uuid) {
-        this.scenes = this.scenes.filter(scene => {
+        this.scenes = this._scenes.filter(scene => {
             return scene.uuid !== uuid;
         });
-        this.emit('sceneRemoved', this, this.scenes);
+        this.emit('sceneRemoved', this, this._scenes);
     }
 
     onSceneActChanged(scene, oldAct, newAct) {
@@ -52,11 +112,11 @@ class Act extends EventEmitter {
         this.emit('sceneActChanged', this, scene, oldAct, newAct);
     }
 
-    onSceneTitleChanged(oldTitle, newTitle) {
+    onSceneTitleChanged(scene, oldTitle, newTitle) {
         this.emit('sceneTitleChanged', this, scene, oldTitle, newTitle);
     }
 
-    onSceneDescriptionChanged(oldDesc, newDesc) {
+    onSceneDescriptionChanged(scene, oldDesc, newDesc) {
         this.emit('sceneDescriptionChanged', this, scene, oldDesc, newDesc);
     }
 

@@ -1,32 +1,24 @@
 import uuidV4 from 'uuid/v4';
 import {EventEmitter} from 'events';
 
-/**
- * A scene gives the characters a concrete context.
- * Fachlich, characters move and handeln in a given
- * context.
- *
- * Class-Events:
- * actChanged(scene, oldAct, newAct)
- * titleChanged(scene, oldTitle, newTitle)
- * descriptionChanged(scene, oldDescription, newDescription)
- */
-class Scene extends EventEmitter {
+import Act from './Act';
 
+class Story extends EventEmitter {
 
     uuid = uuidV4();
-    _act;
+    _acts;
     _title;
     _description;
 
-    get act() {
-        return this._act;
+    get acts() {
+        console.log('get acts', this._acts);
+        return this._acts;
     }
 
-    set act(act) {
-        const oldAct = this._act;
-        this._act = act;
-        this.emit('actChanged', this, oldAct, act);
+    set acts(acts) {
+        const oldActs = this._acts;
+        this._acts = acts;
+        this.emit('actsChanged', this, oldActs, acts);
     }
 
     get title() {
@@ -49,13 +41,18 @@ class Scene extends EventEmitter {
         this.emit('descriptionChanged', this, oldDescription, description);
     }
 
-    constructor(act, title = '', desciption = '') {
+    constructor(title = '', desciption = '', acts = []) {
         super();
-        this._act = act;
         this._title = title;
         this._description = desciption;
+        this._acts = acts;
     }
 
+    createNewAct(title, description) {
+        const newAct = new Act(title, description);
+        this._acts.push(newAct);
+        this.emit('actAdded', newAct, this._acts);
+    }
 }
 
-export default Scene;
+export default Story;

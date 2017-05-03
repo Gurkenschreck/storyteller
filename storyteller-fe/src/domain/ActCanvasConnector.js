@@ -22,10 +22,7 @@ class ActCanvasConnector { // Act Canvas Elemnt abbilder
     act;
     elements;
 
-    constructor(act = new Act(
-        'New Act',
-        'Act description'
-    ), elements = []) {
+    constructor(act, elements = []) {
         this.act = act;
         this.elements = elements;
     }

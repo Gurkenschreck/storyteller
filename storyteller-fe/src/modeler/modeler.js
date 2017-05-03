@@ -5,6 +5,7 @@ import ActEditor from './../components/ActEditor';
 import SceneEditor from './../components/SceneEditor';
 import Act from './../domain/Act';
 import Scene from './../domain/Scene';
+import StoryCanvasMapper from './../domain/StoryCanvasMapper';
 import ActCanvasConnector from './../domain/ActCanvasConnector';
 import {autobind_functions} from './../utils/autobind_functions';
 
@@ -13,6 +14,7 @@ class Modeler extends Component {
     constructor(props) {
         super(props);
         this.displayName = 'Modeler';
+        autobind_functions(this);
 
         this.state = {
             currentActUUID: '',
@@ -20,16 +22,29 @@ class Modeler extends Component {
             actCanvasConnectors: []
         }
 
-        autobind_functions(this);
+        this.storyCanvasMapper = new StoryCanvasMapper();
+        this.storyCanvasMapper.on('onSelectedActChange', this._onSelectedActChange);
+    }
+
+    componentWillMount() {
+        this.storyCanvasMapper.createAct('Initial Act Title', 'Initial Act Description');        
+    }
+
+    _onSelectedActChange(oldAct, newAct) {
+        console.log(oldAct, newAct);
     }
 
     /* react-modeler-canvas callbacks */
     _onElementAdded(element, canvasElements) {
+        console.log('added', element, canvasElements);
+
+
+
         const actCanvasConnectors = this.state.actCanvasConnectors;
         const currentActCanConnector = actCanvasConnectors.find(acc => this.state.currentActUUID === acc.act.uuid);
         currentActCanConnector.elements = canvasElements;
         currentActCanConnector.act.addScene(element.uuid);
-        this.setState({actCanvasConnectors});
+        this.setState({actCanvasConnectors, currentSceneUUID: element.uuid});
     }
 
     _onElementClick(element) {
@@ -79,21 +94,51 @@ class Modeler extends Component {
                 const selectedScene = currentActCanConnector.act.scenes.find(scene => {
                     return scene.uuid === this.state.currentSceneUUID
                 });
-                return (
-                    <SceneEditor
-                        scene={selectedScene}
-                        onBlur={this._handleSceneEditorBlur}
-                    />
-                );
-            } else {
-                return (
-                    <ActEditor
-                        act={currentActCanConnector.act}
-                        onBlur={this._handleActEditorBlur} // TODO change to use onBlur
-                    />
-                );
+                console.log('#', selectedScene, this.state.currentSceneUUID);
+                if(selectedScene) {
+                    return (
+                        <SceneEditor
+                            scene={selectedScene}
+                            onChange={this._handleSceneEditorBlur}
+                        />
+                    );
+                }
             }
+
+            return (
+                <ActEditor
+                    act={currentActCanConnector.act}
+                    onChange={this._handleActEditorBlur} // TODO change to use onBlur
+                />
+            );
         }
+        return null;
+    }
+
+    _newDetermineEditorToDisplay() {
+        console.log('new');
+        const curSelectedScene = this.storyCanvasMapper.getCurrentSelectedScene();
+        if(curSelectedScene) {
+            return (
+                <SceneEditor
+                    scene={curSelectedScene}
+                    onChange={this._handleSceneEditorBlur}
+                />
+            );
+        }
+
+        console.log('no sel scene ');
+        const curSelectedAct = this.storyCanvasMapper.getCurrentSelectedAct();
+        if(curSelectedAct) {
+            return (
+                <ActEditor
+                    act={curSelectedAct}
+                    onChange={this._handleActEditorBlur} // TODO change to use onBlur
+                />
+            );
+        }
+        console.log('nothing selected', this.storyCanvasMapper);
+
         return null;
     }
 
@@ -109,6 +154,7 @@ class Modeler extends Component {
         const actCanvasConnectors = this.state.actCanvasConnectors;
         const currentActCanConnector = actCanvasConnectors.find(acc => this.state.currentActUUID === acc.act.uuid);
 
+        const curActiveAct = this.storyCanvasMapper.getCurrentSelectedAct();
         return (
             <div>
                 <h2>Hello!</h2>
@@ -116,10 +162,10 @@ class Modeler extends Component {
                     <Col sm={1}>
                         <Nav bsStyle="pills" onSelect={this._handleSelect} stacked>
                             {
-                                actCanvasConnectors.map((aec, i) => {
+                                this.storyCanvasMapper.story.acts.map((act, i) => {
                                     return (
-                                        <NavItem key={aec.act.uuid} eventKey={aec.act.uuid}>
-                                            {aec.act.title}
+                                        <NavItem key={act.uuid} eventKey={act.uuid}>
+                                            {act.title}
                                         </NavItem>
                                     );
                                 })
@@ -129,22 +175,18 @@ class Modeler extends Component {
                             </NavItem>
                         </Nav>
                     </Col>
-                    {
-                        currentActCanConnector ?
-                            <Col sm={5}>
-                                <Canvas style={{backgroundColor: '#ddd'}}
-                                    elements={currentActCanConnector.elements}
-                                    onElementAdded={this._onElementAdded}
-                                    newElementShape={PredefinedDrawableShape.RectShape}
-                                    onElementClick={this._onElementClick}
-                                    onElementDoubleClick={this._onElementDoubleClick}
-                                    onElementContextMenu={this._onElementContextMenu}
-                                />
-                            </Col>
-                            : null
-                    }
+                        <Col sm={5}>
+                            <Canvas style={{backgroundColor: '#ddd'}}
+                                elements={this.storyCanvasMapper.elements}
+                                onElementAdded={this._onElementAdded}
+                                newElementShape={PredefinedDrawableShape.RectShape}
+                                onElementClick={this._onElementClick}
+                                onElementDoubleClick={this._onElementDoubleClick}
+                                onElementContextMenu={this._onElementContextMenu}
+                            />
+                        </Col>
                     <Col sm={6}>
-                        {this._determineEditorToDisplay()}
+                        {this._newDetermineEditorToDisplay()}
                     </Col>
                 </Row>
             </div>
