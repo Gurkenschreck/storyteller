@@ -62,8 +62,7 @@ class Act extends EventEmitter {
     }
 
     set selected(selected) {
-        
-        const oldSelected = this._selected;
+
         this._selected = selected;
         console.log('set selected', selected, this._selected);
         this.emit('selectedChanged', this, selected);

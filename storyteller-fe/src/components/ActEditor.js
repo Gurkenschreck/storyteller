@@ -30,10 +30,10 @@ class ActEditor extends Component {
         super(props);
         this.displayName = "ActEditor";
         autobind_functions(this);
-        
-        // TODO make state an immutable-js obj?
+
         this.state = {
-            act: clonedeep(props.act)
+            act: props.act,
+            editing: false
         }
 
         this.bundledInputHandlers = {
@@ -43,13 +43,13 @@ class ActEditor extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState({act: clonedeep(nextProps.act)});
+        this.setState({act: nextProps.act});
     }
 
     _handleChange(event) {
         // TODO use immutablejs
         const act = this._updateState(event, () => {
-            this.props.onChange(act);            
+            this.props.onChange(act);
         });
     }
 
@@ -76,6 +76,7 @@ class ActEditor extends Component {
                 <Col sm={10}>
                     <FormControl type="text" name="title"
                     value={this.state.act.title}
+                    disabled={this.state.editing}
                     {...this.bundledInputHandlers} />
                 </Col>
                 </FormGroup>
@@ -86,10 +87,13 @@ class ActEditor extends Component {
                 </Col>
                 <Col sm={10}>
                     <FormControl componentClass="textarea" name="description"
-                    value={this.state.act.description} 
+                    value={this.state.act.description}
+                    disabled={this.state.editing}
                     {...this.bundledInputHandlers} />
                 </Col>
                 </FormGroup>
+                <button onClick={(e) => this.setState({editing: true})}>Edit</button>
+                <button onClick={(e) => this.setState({editing: false})}>Save</button>
             </Form>
         );
     }

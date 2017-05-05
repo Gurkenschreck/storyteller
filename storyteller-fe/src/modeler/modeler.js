@@ -80,8 +80,8 @@ class Modeler extends Component {
     }
 
     _handleActEditorBlur(act) {
-        const actCanvasConnector = this._getActCanvasConnectorFromState(act.uuid);
-        actCanvasConnector.act = act;
+        //asConnector = this._getActCanvasConnectorFromState(act.uuid);
+        //actCanvasConnector.act = act;
         this.forceUpdate();
     }
 
