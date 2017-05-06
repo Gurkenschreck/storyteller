@@ -18,6 +18,8 @@ class Scene extends EventEmitter {
     _act;
     _title;
     _description;
+    _selected;
+    _active;
 
     get act() {
         return this._act;
@@ -49,11 +51,32 @@ class Scene extends EventEmitter {
         this.emit('descriptionChanged', this, oldDescription, description);
     }
 
+    get selected() {
+        return this._selected;
+    }
+
+    set selected(selected) {
+        this._selected = selected; // TODO remove
+        console.log('set selected', this.uuid, selected, this._selected);
+        this.emit('selectedChanged', this, selected);
+    }
+
+    get active() {
+        return this._active;
+    }
+
+    set active(active) {
+        this._active = active;
+        this.emit('activeChanged', this, active);
+    }
+
     constructor(act, title = '', desciption = '') {
         super();
         this._act = act;
         this._title = title;
         this._description = desciption;
+        this._selected = false;
+        this._active = false;
     }
 
 }

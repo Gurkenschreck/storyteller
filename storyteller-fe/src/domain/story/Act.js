@@ -1,8 +1,8 @@
 import uuidV4 from 'uuid/v4';
+import clonedeep from 'lodash.clonedeep';
 import {EventEmitter} from 'events';
 import Scene from './Scene';
-import {autobind_functions} from './../utils/autobind_functions';
-
+import {autobind_functions} from './../../utils/autobind_functions';
 
 /**
  * An act is a definite section of a story. One story
@@ -57,14 +57,12 @@ class Act extends EventEmitter {
     }
 
     get selected() {
-        console.log('selected', this._selected);
         return this._selected;
     }
 
     set selected(selected) {
-
         this._selected = selected;
-        console.log('set selected', selected, this._selected);
+        console.log('set selected', this.uuid, selected, this._selected);
         this.emit('selectedChanged', this, selected);
     }
 
@@ -73,7 +71,6 @@ class Act extends EventEmitter {
     }
 
     set active(active) {
-        const oldActive = this._active;
         this._active = active;
         this.emit('activeChanged', this, active);
     }
@@ -100,10 +97,26 @@ class Act extends EventEmitter {
     }
 
     removeScene(uuid) {
-        this.scenes = this._scenes.filter(scene => {
-            return scene.uuid !== uuid;
-        });
+        this.scenes = this._scenes.filter(scene => scene.uuid !== uuid);
         this.emit('sceneRemoved', this, this._scenes);
+    }
+
+    selectScene(sceneUUID) {
+        // should be done in act
+        const curSelected = this._scenes.find(scene => scene.selected);
+        const oldSelectedScene = clonedeep(curSelected);
+        const newSelected = this._scenes.find(scene => scene.uuid === sceneUUID);
+        if(curSelected) {
+            curSelected.selected = false;
+        }
+        console.log('#', curSelected, newSelected, this._scenes);
+        newSelected.selected = true;
+        this.emit('onSelectedSceneChanged', oldSelectedScene, newSelected);
+    }
+
+    removeSceneSelection() {
+        this._scenes.forEach(scene => scene.selected = false);
+        this.emit('onSelectedSceneChanged');
     }
 
     onSceneActChanged(scene, oldAct, newAct) {

@@ -1,6 +1,6 @@
 import uuidV4 from 'uuid/v4';
+import clonedeep from 'lodash.clonedeep';
 import {EventEmitter} from 'events';
-
 import Act from './Act';
 
 class Story extends EventEmitter {
@@ -11,7 +11,6 @@ class Story extends EventEmitter {
     _description;
 
     get acts() {
-        console.log('get acts', this._acts);
         return this._acts;
     }
 
@@ -48,10 +47,43 @@ class Story extends EventEmitter {
         this._acts = acts;
     }
 
-    createNewAct(title, description) {
+    getCurrentSelectedAct() {
+        return this.acts.find(act => act.selected);
+    }
+
+    getCurrentSelectedScene() {
+        const curSelAct = this.getCurrentSelectedAct();
+        console.log('Get current selected act', curSelAct);
+        return curSelAct ? curSelAct.scenes.find(scene => scene.selected) : null;
+    }
+
+    createAct(title, description) {
         const newAct = new Act(title, description);
         this._acts.push(newAct);
-        this.emit('actAdded', newAct, this._acts);
+        this.emit('actCreated', newAct, this._acts);
+    }
+
+    findAct(uuid) {
+        return this._acts.find(act => act.uuid === uuid);
+    }
+
+    selectAct(actUUID) {
+        // should be done in story
+        const actWithUUID = this.findAct(actUUID);
+        if(actWithUUID) {
+            const curSelectedAct = this.getCurrentSelectedAct();
+            const oldAct = clonedeep(curSelectedAct);
+            if(curSelectedAct) {
+                curSelectedAct.selected = false;
+            }
+            actWithUUID.selected = true;
+            this.emit('onSelectedActChanged', oldAct, actWithUUID);
+        }
+    }
+
+    clearSceneSelection() {
+        this._acts.forEach(act => act.removeSceneSelection());
+        this.emit('onSelectedSceneChanged');
     }
 }
 

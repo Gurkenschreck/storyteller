@@ -3,10 +3,8 @@ import {Canvas, PredefinedDrawableShape} from 'react-modeler-canvas';
 import {Tab, Row, Col, Nav, NavItem} from 'react-bootstrap';
 import ActEditor from './../components/ActEditor';
 import SceneEditor from './../components/SceneEditor';
-import Act from './../domain/Act';
-import Scene from './../domain/Scene';
+import Story from './../domain/story/Story';
 import StoryCanvasMapper from './../domain/StoryCanvasMapper';
-import ActCanvasConnector from './../domain/ActCanvasConnector';
 import {autobind_functions} from './../utils/autobind_functions';
 
 class Modeler extends Component {
@@ -16,40 +14,43 @@ class Modeler extends Component {
         this.displayName = 'Modeler';
         autobind_functions(this);
 
-        this.state = {
-            currentActUUID: '',
-            currentSceneUUID: '',
-            actCanvasConnectors: []
-        }
+        this.state = {        }
 
-        this.storyCanvasMapper = new StoryCanvasMapper();
-        this.storyCanvasMapper.on('onSelectedActChange', this._onSelectedActChange);
+        const initStory = new Story('New Story', 'Once upon a time...');
+        initStory.on('actCreated', this._onActCreated);
+        this.storyCanvasMapper = new StoryCanvasMapper(initStory);
+        this.storyCanvasMapper.on('onSelectedActChanged', this._onSelectedActChanged);
     }
 
     componentWillMount() {
-        this.storyCanvasMapper.createAct('Initial Act Title', 'Initial Act Description');        
+        this.storyCanvasMapper.story.createAct('Initial Act Title', 'Initial Act Description');        
     }
 
-    _onSelectedActChange(oldAct, newAct) {
-        console.log(oldAct, newAct);
+    /* event handlers of storycanvasmapper and co. */
+    /* Story */
+    _onActCreated(newAct) {
+        newAct.on('onSelectedSceneChanged', this._onSelectedSceneChanged);
+    }
+
+    _onSelectedActChanged(oldAct, newAct) {
+        this.forceUpdate();
+    }
+
+    _onSelectedSceneChanged(oldAct, newAct) {
+        this.forceUpdate();
     }
 
     /* react-modeler-canvas callbacks */
     _onElementAdded(element, canvasElements) {
-        console.log('added', element, canvasElements);
-
-
-
-        const actCanvasConnectors = this.state.actCanvasConnectors;
-        const currentActCanConnector = actCanvasConnectors.find(acc => this.state.currentActUUID === acc.act.uuid);
-        currentActCanConnector.elements = canvasElements;
-        currentActCanConnector.act.addScene(element.uuid);
-        this.setState({actCanvasConnectors, currentSceneUUID: element.uuid});
+        const curAct = this.storyCanvasMapper.story.getCurrentSelectedAct();
+        this.storyCanvasMapper.mapCanvasElements(canvasElements);
+        curAct.addScene(element.uuid);
+        this.forceUpdate();
     }
 
     _onElementClick(element) {
         console.log(`Element click for`, element);
-        this.setState({currentSceneUUID: element.uuid});
+        this.storyCanvasMapper.story.getCurrentSelectedAct().selectScene(element.uuid);
     }
 
     _onElementDoubleClick(element) {
@@ -62,62 +63,25 @@ class Modeler extends Component {
 
      _handleSelect(selectedKey) {
         if(selectedKey === 'add-act') {
-            const actCanvasConnectors = this.state.actCanvasConnectors;
-            const acc = new ActCanvasConnector();
-            actCanvasConnectors.push(acc);
-            this.setState({actCanvasConnectors});
+            this.storyCanvasMapper.story.createAct('New Act', '...');
+            this.forceUpdate();
         } else {
-            this.setState({currentActUUID: selectedKey, currentSceneUUID: ''});
+            this.storyCanvasMapper.story.clearSceneSelection();
+            this.storyCanvasMapper.story.selectAct(selectedKey);
+            this.forceUpdate();            
         }
     }
 
     _handleSceneEditorBlur(scene) {
-        // TODO refactor
-        const actCanvasConnector = this._getActCanvasConnectorFromState(scene.act.uuid);
-        const sce = actCanvasConnector.act.scenes.find(sc => sc.uuid === scene.uuid);
-        actCanvasConnector.act.scenes[actCanvasConnector.act.scenes.indexOf(sce)] = scene;
         this.forceUpdate();
     }
 
     _handleActEditorBlur(act) {
-        //asConnector = this._getActCanvasConnectorFromState(act.uuid);
-        //actCanvasConnector.act = act;
         this.forceUpdate();
     }
 
-    _determineEditorToDisplay() {
-        const actCanvasConnectors = this.state.actCanvasConnectors;
-        const currentActCanConnector = actCanvasConnectors.find(acc => this.state.currentActUUID === acc.act.uuid);
-
-        if(currentActCanConnector) {
-            if(this.state.currentSceneUUID) {
-                const selectedScene = currentActCanConnector.act.scenes.find(scene => {
-                    return scene.uuid === this.state.currentSceneUUID
-                });
-                console.log('#', selectedScene, this.state.currentSceneUUID);
-                if(selectedScene) {
-                    return (
-                        <SceneEditor
-                            scene={selectedScene}
-                            onChange={this._handleSceneEditorBlur}
-                        />
-                    );
-                }
-            }
-
-            return (
-                <ActEditor
-                    act={currentActCanConnector.act}
-                    onChange={this._handleActEditorBlur} // TODO change to use onBlur
-                />
-            );
-        }
-        return null;
-    }
-
-    _newDetermineEditorToDisplay() {
-        console.log('new');
-        const curSelectedScene = this.storyCanvasMapper.getCurrentSelectedScene();
+    _getDisplayedEditor() {
+        const curSelectedScene = this.storyCanvasMapper.story.getCurrentSelectedScene();
         if(curSelectedScene) {
             return (
                 <SceneEditor
@@ -126,9 +90,7 @@ class Modeler extends Component {
                 />
             );
         }
-
-        console.log('no sel scene ');
-        const curSelectedAct = this.storyCanvasMapper.getCurrentSelectedAct();
+        const curSelectedAct = this.storyCanvasMapper.story.getCurrentSelectedAct();
         if(curSelectedAct) {
             return (
                 <ActEditor
@@ -137,24 +99,11 @@ class Modeler extends Component {
                 />
             );
         }
-        console.log('nothing selected', this.storyCanvasMapper);
-
         return null;
     }
 
-    /* Util */
-
-    _getActCanvasConnectorFromState(actUUID) {
-        const currentActCanConnector = this.state.actCanvasConnectors
-            .find(acc => acc.act.uuid === actUUID);
-        return currentActCanConnector;
-    }
-
     render() {
-        const actCanvasConnectors = this.state.actCanvasConnectors;
-        const currentActCanConnector = actCanvasConnectors.find(acc => this.state.currentActUUID === acc.act.uuid);
-
-        const curActiveAct = this.storyCanvasMapper.getCurrentSelectedAct();
+        const curActiveAct = this.storyCanvasMapper.story.getCurrentSelectedAct();
         return (
             <div>
                 <h2>Hello!</h2>
@@ -177,7 +126,7 @@ class Modeler extends Component {
                     </Col>
                         <Col sm={5}>
                             <Canvas style={{backgroundColor: '#ddd'}}
-                                elements={this.storyCanvasMapper.elements}
+                                elements={this.storyCanvasMapper.getScenesToRender()}
                                 onElementAdded={this._onElementAdded}
                                 newElementShape={PredefinedDrawableShape.RectShape}
                                 onElementClick={this._onElementClick}
@@ -186,7 +135,7 @@ class Modeler extends Component {
                             />
                         </Col>
                     <Col sm={6}>
-                        {this._newDetermineEditorToDisplay()}
+                        {this._getDisplayedEditor()}
                     </Col>
                 </Row>
             </div>

@@ -47,7 +47,6 @@ class ActEditor extends Component {
     }
 
     _handleChange(event) {
-        // TODO use immutablejs
         const act = this._updateState(event, () => {
             this.props.onChange(act);
         });
