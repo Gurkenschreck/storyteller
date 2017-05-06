@@ -42,11 +42,14 @@ class DragHandler { // TODO change DragHandler to MouseHandler with events?
      * @param {number} y_c The new y mouse position after mouse movement.
      */
     applyTransition(x_c, y_c) {
-        this.wasDragged = true;
-        this.draggingElement.x += -1 * (this.oldMousePosX - x_c);
-        this.draggingElement.y += -1 * (this.oldMousePosY - y_c);
-        this.oldMousePosX = x_c;
-        this.oldMousePosY =y_c;
+        if(x_c !== this.oldMousePosX
+            && y_c !== this.oldMousePosY) {
+            this.wasDragged = true;
+            this.draggingElement.x += -1 * (this.oldMousePosX - x_c);
+            this.draggingElement.y += -1 * (this.oldMousePosY - y_c);
+            this.oldMousePosX = x_c;
+            this.oldMousePosY = y_c;
+        }
     }
 
     /**

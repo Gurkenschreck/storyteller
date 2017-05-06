@@ -56,8 +56,7 @@ class Scene extends EventEmitter {
     }
 
     set selected(selected) {
-        this._selected = selected; // TODO remove
-        console.log('set selected', this.uuid, selected, this._selected);
+        this._selected = selected;
         this.emit('selectedChanged', this, selected);
     }
 

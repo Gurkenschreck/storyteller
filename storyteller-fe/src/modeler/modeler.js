@@ -23,7 +23,7 @@ class Modeler extends Component {
     }
 
     componentWillMount() {
-        this.storyCanvasMapper.story.createAct('Initial Act Title', 'Initial Act Description');        
+        this.storyCanvasMapper.story.createAct('Initial Act Title', 'Initial Act Description');
     }
 
     /* event handlers of storycanvasmapper and co. */
@@ -68,7 +68,7 @@ class Modeler extends Component {
         } else {
             this.storyCanvasMapper.story.clearSceneSelection();
             this.storyCanvasMapper.story.selectAct(selectedKey);
-            this.forceUpdate();            
+            this.forceUpdate();
         }
     }
 

@@ -99,7 +99,7 @@ export class EditorCanvas extends Component {
      * Handles the onClick event of the canvas element.
      * @param {MouseEvent} e The mouse event.
      */
-    _onClick(e) {
+    _handleClick(e) {
         e.preventDefault();
         const {x_c, y_c} = this._getClickPosition(e);
         if(!this._dragHandler.wasDragged) {
@@ -112,7 +112,7 @@ export class EditorCanvas extends Component {
         this.update();
     }
 
-    _onDoubleClick(e) {
+    _handleDoubleClick(e) {
         e.preventDefault();
         const {x_c, y_c} = this._getClickPosition(e);
         const clickedElement = this._findFirstChildUnderClick(x_c, y_c);
@@ -125,7 +125,7 @@ export class EditorCanvas extends Component {
         this.update();
     }
 
-    _onMouseDown(e) {
+    _handleMouseDown(e) {
         e.preventDefault();
         if(isRightMouseButton(e)) {
             return;
@@ -137,7 +137,7 @@ export class EditorCanvas extends Component {
         }
     }
 
-    _onMouseMove(e) {
+    _handleMouseMove(e) {
         e.preventDefault();
         const {x_c, y_c} = this._getClickPosition(e);
         if(this._dragHandler.isDragging) {
@@ -149,7 +149,7 @@ export class EditorCanvas extends Component {
         }
     }
 
-    _onContextMenu(e) {
+    _handleContextMenu(e) {
         e.preventDefault();
         const {x_c, y_c} = this._getClickPosition(e);
         const clickedElement = this._findFirstChildUnderClick(x_c, y_c);
@@ -181,7 +181,7 @@ export class EditorCanvas extends Component {
         }
         newElements.push(newEle);
         this.setState({elements: newElements}, () => {
-            this.props.onElementAdded(newEle, newElements);            
+            this.props.onElementAdded(newEle, newElements);
         });
         return newEle;
     }
@@ -258,12 +258,11 @@ export class EditorCanvas extends Component {
                     style={this.props.style}
                     width={this.props.width}
                     height={this.props.height}
-                    onClick={this._onClick}
-                    onDoubleClick={this._onDoubleClick}
-                    onMouseDown={this._onMouseDown}
-                    onMouseMove={this._onMouseMove}
-                    onContextMenu={this._onContextMenu}>
-
+                    onClick={this._handleClick}
+                    onDoubleClick={this._handleDoubleClick}
+                    onMouseDown={this._handleMouseDown}
+                    onMouseMove={this._handleMouseMove}
+                    onContextMenu={this._handleContextMenu}>
                 Please use an updated browser that supports the HTML5 canvas element.
                 Try creating an adventure using pen and paper...
             </canvas>
