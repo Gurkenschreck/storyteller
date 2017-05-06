@@ -180,8 +180,9 @@ export class EditorCanvas extends Component {
             newEle.addTransitionFrom(newElements[0])
         }
         newElements.push(newEle);
-        this.setState({elements: newElements});
-        this.props.onElementAdded(newEle, newElements);
+        this.setState({elements: newElements}, () => {
+            this.props.onElementAdded(newEle, newElements);            
+        });
         return newEle;
     }
 
