@@ -8,7 +8,7 @@ import {autobind_functions} from './../../utils/autobind_functions';
  * An act is a definite section of a story. One story
  * can have several acts, and one act is made up of
  * several scenes.
- * 
+ *
  * Class-Events:
  * titleChanged(act, oldTitle, newTitle)
  * descriptionChanged(act, oldDescription, newDescription)
@@ -20,6 +20,7 @@ import {autobind_functions} from './../../utils/autobind_functions';
 class Act extends EventEmitter {
 
     uuid = uuidV4();
+    _abbreviation;
     _title;
     _description;
     _scenes;
@@ -31,9 +32,17 @@ class Act extends EventEmitter {
     }
 
     set title(title) {
-        const oldTitle = this._title;
         this._title = title;
-        this.emit('titleChanged', this, oldTitle, title);
+        this.emit('titleChanged', this);
+    }
+
+    get abbreviation() {
+        return this._abbreviation;
+    }
+
+    set abbreviation(abbr) {
+        this._abbreviation = abbr;
+        this.emit('abbreviationChanged', this);
     }
 
     get description() {
@@ -41,9 +50,8 @@ class Act extends EventEmitter {
     }
 
     set description(description) {
-        const oldDescription = this._description;
         this._description = description;
-        this.emit('descriptionChanged', this, oldDescription, description);
+        this.emit('descriptionChanged', this);
     }
 
     get scenes() {
@@ -53,7 +61,7 @@ class Act extends EventEmitter {
     set scenes(scenes) {
         const oldScenes = this._scenes;
         this._scenes = scenes;
-        this.emit('scenesChanged', this, oldScenes, scenes);
+        this.emit('scenesChanged', this);
     }
 
     get selected() {
@@ -62,8 +70,7 @@ class Act extends EventEmitter {
 
     set selected(selected) {
         this._selected = selected;
-        console.log('set selected', this.uuid, selected, this._selected);
-        this.emit('selectedChanged', this, selected);
+        this.emit('selectedChanged', this);
     }
 
     get active() {
@@ -72,12 +79,13 @@ class Act extends EventEmitter {
 
     set active(active) {
         this._active = active;
-        this.emit('activeChanged', this, active);
+        this.emit('activeChanged', this);
     }
 
     constructor(title, description, scenes = []) {
         super();
         this._title = title;
+        this._abbreviation = title.slice(0, 3);
         this._description = description;
         this._scenes = scenes;
         this._selected = false;
